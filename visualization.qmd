@@ -1,0 +1,793 @@
+---
+title: "Chrono AI Region Map"
+description: "Cross-product attack-region dependency graph: each node is an epic-level region, edges are dependencies, colored by closure stage, shaped by automation level. Click any node for the bilingual term entry. Configuration-driven (config.json + regions.json)."
+format:
+  html:
+    toc: false
+    page-layout: full
+    include-in-header:
+      text: |
+        <link rel="stylesheet" href="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.css">
+---
+
+```{=html}
+<style>
+  body { background: #fbfbfa; }
+  /* Lock the Quarto wrapper to viewport height (minus 62px navbar) so
+     the map shell can fit on a 13" laptop without forcing scroll.
+     Wrapper paddings and Quarto's default page footer are zeroed. */
+  #quarto-content {
+    height: calc(100vh - 62px) !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+  main.content {
+    padding: 0 !important; margin: 0 !important;
+    max-width: 100% !important;
+    height: calc(100vh - 62px) !important;
+    overflow: hidden;
+  }
+  .page-footer, #quarto-content > footer { display: none !important; }
+  #title-block-header { display: none; }
+
+  .map-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: "header header" "graph detail";
+    /* Parent (#quarto-content) is locked to viewport-minus-navbar, so
+       the shell just fills its parent. min-height is a tablet floor.
+       overflow:hidden + min-height:0 on grid items prevents the
+       detail panel's min-content from inflating the grid past parent. */
+    height: 100%;
+    min-height: 540px;
+    overflow: hidden;
+    gap: 0;
+    background: #fbfbfa;
+    border: 1px solid #e0e0e0;
+  }
+  .map-shell > * { min-height: 0; min-width: 0; }
+  main.content > .quarto-section-identifier { display: none; }
+  .quarto-container { max-width: 100% !important; padding: 0 !important; }
+  @media (max-width: 900px) {
+    .map-shell { grid-template-columns: 1fr; grid-template-areas: "header" "graph" "detail"; height: auto; }
+    #cy-wrap { height: 540px; } #cy { height: 100%; }
+    #detail { max-height: 480px; overflow-y: auto; }
+  }
+
+  .map-header {
+    grid-area: header;
+    padding: 0.7rem 1.2rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 0.7rem;
+    border-bottom: 1px solid #e0e0e0; background: #fff;
+  }
+  .map-header h1 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: 0.01em; }
+  .map-header .summary { font-size: 0.86rem; color: #666; }
+  .map-header .summary strong { color: #222; }
+  .map-controls { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end; }
+  .lang-toggle { font-size: 0.85rem; }
+  .lang-toggle button {
+    border: 1px solid #ccc; background: white; padding: 0.2rem 0.6rem;
+    cursor: pointer; font-family: inherit; font-size: 0.85rem;
+  }
+  .lang-toggle button.active { background: #222; color: white; border-color: #222; }
+  .region-picker {
+    font-family: inherit; font-size: 0.88rem;
+    padding: 0.25rem 0.5rem; border: 1px solid #bbb; border-radius: 3px;
+    background: white; min-width: 220px; cursor: pointer;
+  }
+  .region-picker:focus { outline: 2px solid #2c3e50; outline-offset: -1px; }
+
+  #cy-wrap { grid-area: graph; position: relative; height: 100%; background: #fbfbfa; }
+  #cy { width: 100%; height: 100%; }
+  .zoom-controls {
+    position: absolute;
+    top: 12px; left: 12px;
+    display: flex; flex-direction: column; gap: 4px;
+    z-index: 10;
+  }
+  .zoom-controls button {
+    width: 32px; height: 32px;
+    border: 1px solid #d0d0d0;
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 4px;
+    font-size: 1.05rem; line-height: 1;
+    cursor: pointer; padding: 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-family: inherit; color: #333;
+    transition: background 0.12s;
+  }
+  .zoom-controls button:hover { background: #f4f4f4; }
+  .zoom-controls button:active { background: #e8e8e8; }
+  .zoom-controls button:focus { outline: 2px solid #2c3e50; outline-offset: 1px; }
+
+  #detail {
+    grid-area: detail; padding: 1.2rem; overflow-y: auto;
+    border-left: 1px solid #e0e0e0; background: #fff; font-size: 0.92rem;
+  }
+  #detail .hint { color: #aaa; font-style: italic; }
+  #detail .term-name { font-size: 1.25rem; font-weight: 600; }
+  #detail .term-other { color: #888; font-size: 0.95rem; margin-left: 0.4rem; font-style: italic; }
+  #detail .term-desc { margin-top: 0.5rem; line-height: 1.55; }
+  #detail .term-other-desc { margin-top: 0.4rem; color: #777; line-height: 1.5; font-style: italic; }
+  #detail .term-stats {
+    margin-top: 0.9rem; padding-top: 0.7rem; border-top: 1px dashed #ddd;
+    font-family: ui-monospace, monospace; font-size: 0.84rem;
+  }
+  #detail .term-stats span { display: inline-block; margin-right: 0.6rem; padding: 0.1rem 0.45rem; background: #f4f4f4; border-radius: 3px; }
+  #detail .term-deps { margin-top: 0.7rem; font-size: 0.86rem; color: #555; }
+  #detail .term-deps a { color: #2c3e50; cursor: pointer; text-decoration: underline dotted; margin-right: 0.4rem; }
+  #detail .term-deps a:hover { color: #c0392b; }
+  #detail .term-namecerts {
+    margin-top: 0.9rem; padding-top: 0.7rem; border-top: 1px dashed #ddd;
+    font-size: 0.83rem;
+  }
+  #detail .term-namecerts-header {
+    font-weight: 600; color: #444; margin-bottom: 0.35rem; font-size: 0.85rem;
+  }
+  #detail .nc-row {
+    padding: 0.15rem 0; line-height: 1.4;
+    word-break: break-all;
+  }
+  #detail .nc-row code {
+    font-size: 0.78rem; color: #2c3e50; background: transparent;
+  }
+  #detail .term-timeline {
+    margin-top: 0.7rem; font-size: 0.84rem; color: #555;
+    padding: 0.35rem 0.55rem; background: #f7f9fb; border-radius: 3px;
+    border-left: 3px solid #2980b9; line-height: 1.5;
+  }
+  #detail .legend { margin-top: 1.5rem; padding-top: 0.9rem; border-top: 1px solid #eee; font-size: 0.82rem; color: #666; }
+  #detail .legend .swatch {
+    display: inline-block; width: 14px; height: 14px; vertical-align: middle;
+    margin-right: 0.3rem;
+    background: #999;
+  }
+  #detail .legend .swatch.circle,
+  #detail .legend .swatch.ellipse {
+    border-radius: 50%; border: 1px solid rgba(0,0,0,0.2);
+  }
+  #detail .legend .swatch.hexagon,
+  #detail .legend .swatch.hex {
+    /* Cytoscape's hexagon shape, mirrored as a CSS clip-path so the legend
+       matches the on-graph node silhouette exactly. */
+    clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0% 50%);
+  }
+  #detail .legend .swatch.triangle {
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  }
+  #detail .legend .swatch.star {
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  }
+  #detail .legend > div { padding: 0.12rem 0; }
+  #detail .legend-subhead {
+    font-size: 0.78rem; font-weight: 600; color: #555;
+    margin-top: 0.5rem; margin-bottom: 0.3rem;
+  }
+  #detail .legend-subhead.legend-subhead-tight { margin-top: 0.65rem; }
+</style>
+
+<div class="map-shell">
+  <div class="map-header">
+    <h1 data-i18n="title">Chrono AI Region Map</h1>
+    <div class="summary" id="summary"></div>
+    <select id="region-picker" class="region-picker" onchange="onPickerChange(this.value)">
+      <option value="" data-i18n="picker_default">-- jump to region --</option>
+    </select>
+    <div class="map-controls">
+      <div class="lang-toggle">
+        <span data-i18n="lang_label" style="margin-right:0.4rem;">Language:</span>
+        <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+        <button id="btn-zh" onclick="setLang('zh')">中文</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cy-wrap">
+    <div id="cy"></div>
+    <div class="zoom-controls" id="zoom-controls">
+      <button type="button" id="zoom-in" data-i18n-title="zoom_in" title="Zoom in" aria-label="Zoom in">+</button>
+      <button type="button" id="zoom-out" data-i18n-title="zoom_out" title="Zoom out" aria-label="Zoom out">&#8722;</button>
+      <button type="button" id="zoom-reset" data-i18n-title="zoom_reset" title="Fit to view" aria-label="Fit to view"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5V2h3M9 2h3v3M12 9v3H9M5 12H2V9"/></svg></button>
+    </div>
+  </div>
+
+  <div id="detail">
+    <div id="detail-content">
+      <div class="hint" data-i18n="hint">Click a node to see its bilingual entry, stats, and dependencies.</div>
+    </div>
+
+    <div class="legend">
+      <div data-i18n="legend_title" style="font-weight:600; color:#444; margin-bottom:0.4rem;">Legend</div>
+      <div class="legend-subhead" data-i18n="legend_color_head">Color = closure stage</div>
+      <div id="legend-color-list"></div>
+      <div class="legend-subhead legend-subhead-tight" data-i18n="legend_shape_head">Shape = automation level</div>
+      <div id="legend-shape-list"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+
+<script>
+const I18N = {
+  en: {
+    title: "Chrono AI Region Map",
+    lang_label: "Language:",
+    hint: "Click a node to see its bilingual entry, stats, and dependencies.",
+    legend_title: "Legend",
+    legend_color_head: "Color = closure stage",
+    legend_shape_head: "Shape = automation level",
+    sum_regions: "regions",
+    detail_timeline: "Timeline:",
+    detail_upstream: "Upstream:",
+    detail_downstream: "Downstream:",
+    picker_default: "-- jump to region --",
+    zoom_in: "Zoom in",
+    zoom_out: "Zoom out",
+    zoom_reset: "Fit to view",
+  },
+  zh: {
+    title: "Chrono AI 攻坚地图",
+    lang_label: "语言:",
+    hint: "点击节点查看双语词条, 统计和依赖关系.",
+    legend_title: "图例",
+    legend_color_head: "颜色 = 闭合阶段",
+    legend_shape_head: "形状 = 自动化等级",
+    sum_regions: "领域",
+    detail_timeline: "时间线:",
+    detail_upstream: "上游:",
+    detail_downstream: "下游:",
+    picker_default: "-- 跳到领域 --",
+    zoom_in: "放大",
+    zoom_out: "缩小",
+    zoom_reset: "适应窗口",
+  },
+};
+
+let LANG = "en";  // overridden in loadData() from config.ui.default_lang
+let CONFIG = null, REGIONS_DOC = null, CY = null;
+let FOCUS_SET = new Set();
+let CLOSURE_BY_KEY = {};   // built from config.closure_tiers
+let FORMAL_BY_KEY = {};    // built from config.formal_levels
+let PRODUCT_BY_KEY = {};   // built from config.products
+
+async function loadData() {
+  const v = "?v=" + Date.now();
+  const [cfg, regionsDoc] = await Promise.all([
+    fetch("config.json" + v, { cache: "no-store" }).then(r => r.json()),
+    fetch("regions.json" + v, { cache: "no-store" }).then(r => r.json()),
+  ]);
+  CONFIG = cfg;
+  REGIONS_DOC = regionsDoc;
+  LANG = cfg.ui.default_lang || "en";
+
+  // Index lookups for O(1) access
+  CONFIG.closure_tiers.forEach(t => { CLOSURE_BY_KEY[t.key] = t; });
+  CONFIG.formal_levels.forEach(f => { FORMAL_BY_KEY[f.key] = f; });
+  CONFIG.products.forEach(p => { PRODUCT_BY_KEY[p.key] = p; });
+
+  // Focus set drives red border
+  FOCUS_SET = new Set(
+    Object.entries(REGIONS_DOC.regions)
+      .filter(([_, r]) => r.focus === true)
+      .map(([id]) => id)
+  );
+}
+
+function buildCytoscapeElements() {
+  const nodes = [];
+  const edges = [];
+  const regions = REGIONS_DOC.regions;
+
+  for (const [id, r] of Object.entries(regions)) {
+    nodes.push({
+      data: {
+        id,
+        label_en: r.label.en,
+        label_zh: r.label.zh,
+        closure: r.closure,
+        formal: r.formal,
+        product: r.product,
+        milestone: r.milestone,
+        owner: r.owner,
+        issue_count: r.issue_count || 0,
+        focus: r.focus === true,
+        archived: r.archived === true,
+      }
+    });
+    for (const dep of (r.deps || [])) {
+      const depKey = typeof dep === "string" ? dep : dep.key;
+      const weight = (typeof dep === "object" && dep.weight) ? dep.weight : 1;
+      edges.push({
+        data: { source: depKey, target: id, weight }
+      });
+    }
+  }
+
+  return { nodes, edges };
+}
+
+function t(key) { return I18N[LANG][key] || key; }
+
+function applyStaticI18n() {
+  // Build dynamic I18N from config (title + legend + tier/formal labels),
+  // merged with the static I18N table for everything not yet in config.
+  const dyn = { en: {}, zh: {} };
+  if (CONFIG && CONFIG.ui) {
+    dyn.en.title = CONFIG.ui.title.en;
+    dyn.zh.title = CONFIG.ui.title.zh;
+    for (const [key, label] of Object.entries(CONFIG.ui.legend || {})) {
+      dyn.en["legend_" + key] = label.en;
+      dyn.zh["legend_" + key] = label.zh;
+    }
+  }
+  if (CONFIG && CONFIG.closure_tiers) {
+    CONFIG.closure_tiers.forEach(tier => {
+      dyn.en["closure_" + tier.key] = tier.label.en;
+      dyn.zh["closure_" + tier.key] = tier.label.zh;
+    });
+  }
+  if (CONFIG && CONFIG.formal_levels) {
+    CONFIG.formal_levels.forEach(f => {
+      dyn.en["formal_" + f.key] = f.label.en;
+      dyn.zh["formal_" + f.key] = f.label.zh;
+    });
+  }
+  const lookup = key =>
+    (dyn[LANG] && dyn[LANG][key] !== undefined) ? dyn[LANG][key] :
+    (I18N[LANG][key] !== undefined ? I18N[LANG][key] : undefined);
+
+  document.title = lookup("title") || "Region Map";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    const v = lookup(key);
+    if (v !== undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach(el => {
+    const key = el.getAttribute("data-i18n-title");
+    const v = lookup(key);
+    if (v !== undefined) {
+      el.setAttribute("title", v);
+      el.setAttribute("aria-label", v);
+    }
+  });
+  const btnEn = document.getElementById("btn-en");
+  const btnZh = document.getElementById("btn-zh");
+  if (btnEn) btnEn.classList.toggle("active", LANG === "en");
+  if (btnZh) btnZh.classList.toggle("active", LANG === "zh");
+
+  const summary = document.getElementById("summary");
+  if (summary && REGIONS_DOC) {
+    const total = Object.keys(REGIONS_DOC.regions).length;
+    summary.innerHTML = `<strong>${total}</strong> ${t("sum_regions")}`;
+  }
+  populatePicker();
+  renderLegend();
+}
+
+// pickerOptionLabel + REGION_GROUPS removed in Task 7;
+// populatePicker now reads labels directly from REGIONS_DOC.
+
+function populatePicker() {
+  const sel = document.getElementById("region-picker");
+  if (!sel || !REGIONS_DOC || !CONFIG) return;
+  const regions = REGIONS_DOC.regions;
+
+  const groups = CONFIG.products.map(p => ({
+    key: p.key,
+    label: p.label[LANG] || p.label.en,
+    items: Object.keys(regions).filter(rid => regions[rid].product === p.key)
+  })).filter(g => g.items.length > 0);
+
+  let html = `<option value="">${t("picker_default")}</option>`;
+  for (const g of groups) {
+    html += `<optgroup label="${g.label}">`;
+    for (const id of g.items.sort()) {
+      const r = regions[id];
+      const lbl = (r.label && r.label[LANG]) || (r.label && r.label.en) || id;
+      html += `<option value="${id}">${lbl}</option>`;
+    }
+    html += `</optgroup>`;
+  }
+  sel.innerHTML = html;
+}
+
+function onPickerChange(id) {
+  if (!id) return;
+  showNodeDetail(id);
+  // showNodeDetail zooms into the connected subgraph; tapping an empty
+  // area restores the global fit.
+}
+
+// Two visual channels driven entirely by config.json:
+//   color  = closure tier (config.closure_tiers[*].color, keyed by region.closure)
+//   shape  = formal automation level (config.formal_levels[*].shape, keyed by region.formal)
+//   size   = region.issue_count
+//   border = focus emphasis (CONFIG.focus_quarter.border_color/border_width when focus=true)
+
+// Closure tier colors come from CONFIG.closure_tiers — built once after loadData.
+function getClosureColor(closureKey) {
+  return (CLOSURE_BY_KEY[closureKey] && CLOSURE_BY_KEY[closureKey].color) || "#bdc3c7";
+}
+
+function nodeShape(node) {
+  const f = FORMAL_BY_KEY[node.formal];
+  return (f && f.shape) || "ellipse";
+}
+
+function nodeBorder(node) {
+  if (FOCUS_SET.has(node.id)) {
+    return {
+      stroke: CONFIG.focus_quarter.border_color || "#c0392b",
+      borderWidth: CONFIG.focus_quarter.border_width || 3,
+    };
+  }
+  return { stroke: "#ffffff", borderWidth: 2 };
+}
+
+function nodeVisual(node) {
+  const fill = getClosureColor(node.closure);
+  const shape = nodeShape(node);
+  const border = nodeBorder(node);
+  return { fill, shape, ...border };
+}
+
+function nodeSizeMetric(node) {
+  return Math.max(1, node.issue_count || 1);
+}
+
+function nodeLabel(node) {
+  if (!node) return "";
+  return node["label_" + LANG] || node["label_en"] || node.id || "";
+}
+
+function refreshNodeVisuals() {
+  if (!CY) return;
+  const regions = REGIONS_DOC ? REGIONS_DOC.regions : {};
+  CY.nodes().forEach(n => {
+    const r = regions[n.id()];
+    if (!r) return;
+    const visual = nodeVisual({
+      id: n.id(),
+      closure: r.closure,
+      formal: r.formal,
+    });
+    n.data("color", visual.fill);
+    n.data("shape", visual.shape);
+    n.data("stroke", visual.stroke);
+    n.data("borderWidth", visual.borderWidth);
+    n.data("size", nodeSizeMetric({ issue_count: r.issue_count }));
+    n.data("label", nodeLabel({
+      label_en: r.label.en,
+      label_zh: r.label.zh,
+      id: n.id(),
+    }));
+    // archived also kept on the data object so the node[?archived] selector
+    // matches; we set it during buildCytoscapeElements but refresh here in
+    // case regions.json was reloaded.
+    n.data("archived", r.archived === true);
+  });
+  CY.style().update();
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+
+function renderCy() {
+  CY = cytoscape({
+    container: document.getElementById("cy"),
+    elements: buildCytoscapeElements(),
+    style: [
+      {
+        selector: "node",
+        style: {
+          "shape": "data(shape)",
+          "background-color": "data(color)",
+          "label": "data(label)",
+          "font-size": "13px",
+          "font-weight": 600,
+          "color": "#1a1a1a",
+          "text-valign": "bottom",
+          "text-halign": "center",
+          "text-margin-y": 6,
+          "text-outline-color": "#fbfbfa",
+          "text-outline-width": 2,
+          "text-background-color": "#fbfbfa",
+          "text-background-opacity": 0.85,
+          "text-background-padding": "3px",
+          "text-background-shape": "roundrectangle",
+          "text-wrap": "wrap",
+          "text-max-width": "140px",
+          "width": "mapData(size, 0, 30, 36, 72)",
+          "height": "mapData(size, 0, 30, 36, 72)",
+          "border-width": "data(borderWidth)",
+          "border-color": "data(stroke)",
+          "overlay-padding": 4,
+        },
+      },
+      {
+        selector: "node:selected",
+        style: {
+          "border-width": 8,
+          "border-color": "#f39c12",
+          "border-opacity": 1,
+          "overlay-color": "#f39c12",
+          "overlay-opacity": 0.18,
+          "overlay-padding": 12,
+          "z-index": 999,
+        }
+      },
+      {
+        selector: "edge",
+        style: {
+          "width": 1.5, "line-color": "#7a8a99",
+          "target-arrow-color": "#7a8a99", "target-arrow-shape": "triangle",
+          "curve-style": "bezier", "arrow-scale": 0.95,
+          "opacity": 0.55,
+        },
+      },
+      { selector: "edge.highlight", style: { "line-color": "#c0392b", "target-arrow-color": "#c0392b", "width": 3, "opacity": 1 } },
+      { selector: "edge.faded", style: { "opacity": 0.06 } },
+      { selector: "node.faded", style: { "opacity": 0.15 } },
+      // Archived regions render dim (opacity sourced from CONFIG.archive_rule.opacity, built dynamically).
+      // Using a Cytoscape selector keeps this declarative; refreshNodeVisuals
+      // writes the boolean `archived` data field that this selector tests.
+      { selector: "node[?archived]", style: { "opacity": CONFIG.archive_rule.opacity ?? 0.35 } },
+    ],
+    layout: {
+      name: "dagre",
+      // 35 nodes (NyxID + Aevatar). LR shows primitives (left) → derived
+      // (right). Spacing tuned for legibility: nodeSep generous so labels
+      // (text-valign: bottom) don't crash into the next node's circle.
+      rankDir: "LR",
+      nodeSep: 50,
+      rankSep: 180,
+      edgeSep: 14,
+      ranker: "network-simplex",
+      padding: 24,
+      fit: true,
+      animate: false,
+    },
+    // Disable wheel/pinch zoom (per request); pan-drag remains for nudging
+    // so the dropdown's centered jump can be fine-tuned without the user
+    // ever needing to scroll-zoom. The +/-/fit buttons drive zoom
+    // programmatically — bounds keep them sane.
+    userZoomingEnabled: false,
+    userPanningEnabled: true,
+    boxSelectionEnabled: false,
+    wheelSensitivity: 0,
+    autoungrabify: true,
+    minZoom: 0.05,
+    maxZoom: 4,
+  });
+  setupZoomControls();
+
+  CY.on("tap", "node", evt => showNodeDetail(evt.target.id()));
+  CY.on("tap", evt => {
+    if (evt.target === CY) {
+      const el = document.getElementById("detail-content");
+      if (el) el.innerHTML = `<div class="hint">${t("hint")}</div>`;
+      CY.elements().removeClass("highlight").removeClass("faded");
+      CY.nodes().unselect();
+      // Restore the global fit when the user taps an empty area.
+      CY.animate(
+        { fit: { eles: CY.elements(), padding: 16 } },
+        { duration: 350, easing: "ease-out" }
+      );
+    }
+  });
+  // Global view: fit all nodes in the viewport. With the bigger font and
+  // outline below, labels stay legible even when fit-zoomed. The dropdown
+  // is the primary nav for jumping between specific regions.
+  CY.fit(undefined, 16);
+}
+
+function setupZoomControls() {
+  if (!CY) return;
+  const stepZoom = factor => {
+    const w = CY.width(), h = CY.height();
+    const next = CY.zoom() * factor;
+    CY.zoom({ level: next, renderedPosition: { x: w / 2, y: h / 2 } });
+  };
+  const bind = (id, fn) => {
+    const el = document.getElementById(id);
+    if (el) el.onclick = fn;
+  };
+  bind("zoom-in",  () => stepZoom(1.25));
+  bind("zoom-out", () => stepZoom(0.8));
+  bind("zoom-reset", () => {
+    const visible = CY.elements(":visible");
+    const eles = visible.length ? visible : CY.elements();
+    CY.animate({ fit: { eles, padding: 16 } }, { duration: 300, easing: "ease-out" });
+  });
+}
+
+function highlightSubgraph(id) {
+  if (!CY || !REGIONS_DOC) return;
+  CY.elements().removeClass("highlight").removeClass("faded");
+  CY.nodes().unselect();
+  const cyNode = CY.getElementById(id);
+  if (cyNode && !cyNode.empty()) cyNode.select();
+
+  // Compute upstream/downstream from REGIONS_DOC.regions[].deps so the
+  // graph highlights the connected subgraph.
+  const incomingMap = {};   // target -> [sources]
+  const outgoingMap = {};   // source -> [targets]
+  for (const [rid, rr] of Object.entries(REGIONS_DOC.regions)) {
+    for (const dep of (rr.deps || [])) {
+      const depKey = typeof dep === "string" ? dep : dep.key;
+      (outgoingMap[depKey] = outgoingMap[depKey] || []).push(rid);
+      (incomingMap[rid] = incomingMap[rid] || []).push(depKey);
+    }
+  }
+  const upSet = new Set([id]);
+  const downSet = new Set([id]);
+  const queueUp = [id];
+  while (queueUp.length) {
+    const cur = queueUp.shift();
+    for (const s of (incomingMap[cur] || [])) {
+      if (!upSet.has(s)) { upSet.add(s); queueUp.push(s); }
+    }
+  }
+  const queueDown = [id];
+  while (queueDown.length) {
+    const cur = queueDown.shift();
+    for (const tgt of (outgoingMap[cur] || [])) {
+      if (!downSet.has(tgt)) { downSet.add(tgt); queueDown.push(tgt); }
+    }
+  }
+  const keep = new Set([...upSet, ...downSet]);
+
+  CY.nodes().forEach(n => { if (!keep.has(n.id())) n.addClass("faded"); });
+  CY.edges().forEach(e => {
+    const s = e.data("source"), tgt = e.data("target");
+    if (keep.has(s) && keep.has(tgt)) e.addClass("highlight");
+    else e.addClass("faded");
+  });
+
+  const focusEles = CY.elements().filter(el => {
+    if (el.isNode()) return keep.has(el.id());
+    return keep.has(el.data("source")) && keep.has(el.data("target"));
+  });
+  CY.animate(
+    { fit: { eles: focusEles, padding: 60 } },
+    { duration: 350, easing: "ease-out" }
+  );
+}
+
+function showNodeDetail(id) {
+  if (!REGIONS_DOC) return;
+  const r = REGIONS_DOC.regions[id];
+  if (!r) return;
+  const detailEl = document.getElementById("detail-content");
+  if (!detailEl) return;
+
+  highlightSubgraph(id);
+
+  const closure = CLOSURE_BY_KEY[r.closure] || {};
+  const formal = FORMAL_BY_KEY[r.formal] || {};
+  const product = PRODUCT_BY_KEY[r.product] || {};
+  const lang = LANG;
+
+  // promoted_at timeline like "接手 02-15 → 设计完 03-01 → 已承诺 03-15"
+  const tiers = ["obligation", "scoped", "public", "bridged", "mature"];
+  const promotedAt = r.promoted_at || {};
+  const timeline = tiers
+    .map(k => {
+      const date = promotedAt[k];
+      if (!date) return null;
+      const tierLabel = (CLOSURE_BY_KEY[k] || {}).label?.[lang] || k;
+      return `${tierLabel} ${date}`;
+    })
+    .filter(Boolean)
+    .join(" → ");
+
+  // Downstream: regions that list `id` in their deps
+  const downstream = Object.entries(REGIONS_DOC.regions)
+    .filter(([_, rr]) => (rr.deps || []).some(d => (typeof d === "string" ? d : d.key) === id))
+    .map(([k]) => k);
+
+  const upstream = (r.deps || [])
+    .map(d => typeof d === "string" ? d : d.key)
+    .filter(k => REGIONS_DOC.regions[k]);
+
+  const otherLang = lang === "en" ? "zh" : "en";
+  const primaryLabel = (r.label && r.label[lang]) || (r.label && r.label.en) || id;
+  const otherLabel = (r.label && r.label[otherLang]) || "";
+  const primaryDesc = (r.desc && r.desc[lang]) || "";
+
+  const linkRegion = k => {
+    const rr = REGIONS_DOC.regions[k];
+    const lbl = (rr && rr.label && rr.label[lang]) || (rr && rr.label && rr.label.en) || k;
+    return `<a onclick="showNodeDetail(${JSON.stringify(k)})">${escapeHtml(lbl)}</a>`;
+  };
+
+  detailEl.innerHTML = `
+    <div class="term-name">${escapeHtml(primaryLabel)}${
+      otherLabel && otherLabel !== primaryLabel
+        ? `<span class="term-other">${escapeHtml(otherLabel)}</span>`
+        : ""
+    }</div>
+    ${primaryDesc ? `<div class="term-desc">${escapeHtml(primaryDesc)}</div>` : ""}
+    <div class="term-stats">
+      <span>${escapeHtml(closure.label?.[lang] || r.closure || "")}</span>
+      <span>${escapeHtml(formal.label?.[lang] || r.formal || "")}</span>
+      <span>${escapeHtml(product.label?.[lang] || r.product || "")}</span>
+      ${r.milestone ? `<span>${escapeHtml(r.milestone)}</span>` : ""}
+      ${r.owner ? `<span>@${escapeHtml(r.owner)}</span>` : ""}
+      <span>#${r.issue_count || 0}</span>
+      ${r.focus ? '<span style="color:#c0392b">★ focus</span>' : ""}
+      ${r.archived ? '<span style="opacity:0.6">archived</span>' : ""}
+    </div>
+    ${timeline ? `<div class="term-timeline"><strong>${t("detail_timeline")}</strong> ${escapeHtml(timeline)}</div>` : ""}
+    ${upstream.length ? `<div class="term-deps"><strong>${t("detail_upstream")}</strong> ${upstream.map(linkRegion).join(" ")}</div>` : ""}
+    ${downstream.length ? `<div class="term-deps"><strong>${t("detail_downstream")}</strong> ${downstream.map(linkRegion).join(" ")}</div>` : ""}
+  `;
+}
+
+function renderLegend() {
+  if (!CONFIG) return;
+  const lc = document.getElementById("legend-color-list");
+  const ls = document.getElementById("legend-shape-list");
+  if (lc) {
+    lc.innerHTML = CONFIG.closure_tiers.map(tier =>
+      `<div><span class="swatch circle" style="background:${tier.color};"></span>${escapeHtml(tier.label[LANG] || tier.label.en)}</div>`
+    ).join("");
+  }
+  if (ls) {
+    ls.innerHTML = CONFIG.formal_levels.map(f =>
+      `<div><span class="swatch ${f.shape}"></span>${escapeHtml(f.label[LANG] || f.label.en)}</div>`
+    ).join("");
+  }
+}
+
+function renderAll() {
+  applyStaticI18n();
+  if (!CY) {
+    renderCy();
+    // Initial paint: populate data fields the style block reads
+    // (color/shape/stroke/borderWidth/size/label/archived). Without this
+    // call, the first render leaves nodes as gray ellipses with no labels
+    // because Cytoscape's `data(...)` selectors resolve to undefined.
+    refreshNodeVisuals();
+    // Cytoscape's auto-fit happens before refreshNodeVisuals widens nodes,
+    // so re-fit once labels and sizes are set.
+    if (CY) CY.fit(undefined, 16);
+  } else {
+    refreshNodeVisuals();
+  }
+  if (CY && CY.nodes(":selected").length) {
+    showNodeDetail(CY.nodes(":selected")[0].id());
+  } else {
+    const detailEl = document.getElementById("detail-content");
+    if (detailEl) detailEl.innerHTML = `<div class="hint">${t("hint")}</div>`;
+  }
+}
+
+function setLang(lang) {
+  LANG = lang;
+  renderAll();
+}
+
+(async () => {
+  try {
+    await loadData();
+    renderAll();
+  } catch (e) {
+    document.getElementById("cy").innerHTML =
+      `<div style="padding:2rem;color:red;">Error loading data: ${e.message}</div>`;
+  }
+})();
+</script>
+```

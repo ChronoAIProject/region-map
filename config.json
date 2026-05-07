@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "version": 1,
+    "description": "Region Map config: products / closure tiers / formal levels / focus / UI"
+  },
+  "products": [
+    {"key": "nyxid", "label": {"en": "NyxID", "zh": "NyxID"}},
+    {"key": "aevatar", "label": {"en": "Aevatar", "zh": "Aevatar"}}
+  ],
+  "closure_tiers": [
+    {
+      "key": "seed",
+      "label": {"en": "Proposed", "zh": "提出"},
+      "color": "#bdc3c7",
+      "trigger": {"en": "issue / discussion created", "zh": "issue / discussion 已创建"}
+    },
+    {
+      "key": "obligation",
+      "label": {"en": "Claimed", "zh": "接手"},
+      "color": "#3498db",
+      "trigger": {"en": "assignee set", "zh": "assignee 字段非空"}
+    },
+    {
+      "key": "scoped",
+      "label": {"en": "Designed", "zh": "设计完"},
+      "color": "#9b59b6",
+      "trigger": {"en": "RFC / ADR / design doc merged", "zh": "RFC / ADR / 设计 doc merged"}
+    },
+    {
+      "key": "public",
+      "label": {"en": "Committed", "zh": "已承诺"},
+      "color": "#e67e22",
+      "trigger": {"en": "release notes / changelog / sales / blog announced", "zh": "release notes / changelog / 销售材料 / blog 已发"}
+    },
+    {
+      "key": "bridged",
+      "label": {"en": "Integrated", "zh": "已集成"},
+      "color": "#16a085",
+      "trigger": {"en": "upstream/downstream issues closed + smoke passed", "zh": "上下游 issue closed + smoke 通过"}
+    },
+    {
+      "key": "mature",
+      "label": {"en": "Operating", "zh": "运行中"},
+      "color": "#27ae60",
+      "trigger": {"en": "30 days incident-free", "zh": "30 天无 incident 稳定运行"}
+    }
+  ],
+  "formal_levels": [
+    {"key": "none", "shape": "ellipse", "label": {"en": "No automation", "zh": "无自动化"}},
+    {"key": "sop", "shape": "triangle", "label": {"en": "Has SOP / runbook", "zh": "有 SOP / runbook"}},
+    {"key": "checked", "shape": "hexagon", "label": {"en": "Has CI / tests", "zh": "有自动化测试 / CI"}},
+    {"key": "audited", "shape": "star", "label": {"en": "Has monitoring + SLO", "zh": "有 monitoring + 告警 + SLO"}}
+  ],
+  "focus_quarter": {
+    "label": {"en": "2026 Q2 Focus", "zh": "2026 Q2 焦点"},
+    "border_color": "#c0392b",
+    "border_width": 3
+  },
+  "archive_rule": {
+    "after_mature_days": 30,
+    "opacity": 0.35
+  },
+  "ui": {
+    "title": {"en": "Chrono AI Region Map", "zh": "Chrono AI 攻坚地图"},
+    "default_lang": "zh",
+    "legend": {
+      "color_head": {"en": "Color = closure stage", "zh": "颜色 = 闭合阶段"},
+      "shape_head": {"en": "Shape = automation level", "zh": "形状 = 自动化等级"},
+      "size_head": {"en": "Size = issue count", "zh": "大小 = issue 数"},
+      "border_head": {"en": "Red border = current focus", "zh": "红框 = 当前焦点"}
+    }
+  }
+}

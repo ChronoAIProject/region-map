@@ -1,0 +1,19 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - "*.json"
+
+website:
+  title: "Chrono AI Region Map"
+  navbar:
+    left:
+      - text: "Region Map"
+        href: visualization.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: assets/region-map.css
+    toc: false
+    code-fold: true
