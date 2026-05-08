@@ -120,8 +120,7 @@
       "focus": false,
       "archived": false,
       "promoted_at": {},
-      "deps": [],
-      "gh_query": "is:issue is:open repo:aevatarAI/aevatar-deck"
+      "deps": []
     },
     "Aevatar-NyxID-Integration": {
       "label": {
@@ -607,8 +606,7 @@
       "promoted_at": {
         "public": "2026-04-10"
       },
-      "deps": [],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/nyxid-landing"
+      "deps": []
     },
     "NyxID-M0-Milestone": {
       "label": {
@@ -984,8 +982,7 @@
       "promoted_at": {},
       "deps": [
         "Aevatar-Agent-Framework"
-      ],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/vibe-soulgarden-expo"
+      ]
     },
     "GodGPT-Lumen-Personality": {
       "label": {
