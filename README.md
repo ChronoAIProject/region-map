@@ -4,6 +4,27 @@
 
 源自 newmath BEDC viz, 复用 closure-tier 心智模型 (单调闭合, 不回退, mature 后封档)。
 
+## 单一事实源 / Single source of truth
+
+**GitHub (源码 + issues + PRs + project boards) 是唯一事实源。** 每个 region 必须能映射到 GitHub 上的某个具体存在 (issue / PR / 代码目录 / release / project board column)。
+
+不能做 region 的:
+- 内部 doc / GTM artifact (e.g. `internal/*.md`, Excel CRM, 教程草稿)
+- 纯概念聚合 (没有任何 issue / PR / 代码 backing 的"理念节点")
+- 跨产品的"未来集成"占位 (等真有 issue 再开)
+
+closure 阶段的 trigger 必须有 GitHub 证据:
+- `seed`: issue / discussion 已建
+- `obligation`: issue 有 assignee
+- `scoped`: RFC / ADR / design doc PR 已 merge
+- `public`: release / changelog / blog 公开
+- `bridged`: 上下游 issue closed + smoke 通过
+- `mature`: **30 天 incident-free** (有 release tag + 30 天内无新 bug)
+
+`mature` 是高门槛 — 仅靠"功能能用"不够, 需要 30 天稳定运行。带近期 bug / 频繁迭代 / 无 release tag 的功能是 `public`, 不是 `mature`。
+
+每个 region 应该有 `gh_query` 字段, 让 weekly audit (`audit.yml`) 自动对账实际 issue 数 vs 声称的 `issue_count`, 漂移自动报告。
+
 ## 在线访问 / Live
 
 发布在 GitHub Pages: <https://chronoaiproject.github.io/region-map/visualization.html>

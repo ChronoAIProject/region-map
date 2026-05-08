@@ -33,6 +33,7 @@ Company epic-level goals (NyxID-OAuth-flow / Aevatar-Workflow-YAML / Voice-Avata
 
 ### Design principles
 
+- **GitHub is the single source of truth**: every region must map to actual GitHub state (issue / PR / code directory / release / project board column). Internal docs, GTM artifacts, and conceptual aggregations without GitHub backing are NOT regions. `closure` claims must have GitHub evidence — `mature` requires a release tag AND 30 days incident-free, not just "the feature works." Every region should have a `gh_query` field so `audit.yml` can detect drift weekly.
 - **Three-layer separation (config / data / code)**: business info only lives in config or data files; code never references concrete product names / region names / status copy / colors
 - **Monotonic closure**: the closure field can only advance (mental model from newmath — proven theorems don't get unproven)
 - **Archive after mature**: mature nodes are not updated; follow-up work opens new nodes that depend on the original
