@@ -661,141 +661,308 @@
         "NyxID-Landing-Page"
       ]
     },
-    "Ornn-Skill-Discovery": {
+    "Ornn-API-V1-Refactor": {
       "label": {
-        "en": "Skill Discovery",
-        "zh": "Skill 发现"
+        "en": "API v1 Refactor (Epic 0-4)",
+        "zh": "API v1 重构 (Epic 0-4)"
       },
       "desc": {
-        "en": "Semantic search + keyword + category browse for AI skills. No release tags yet, so not mature.",
-        "zh": "语义搜索 + 关键词 + 分类浏览。仓库无 release tag, 不满足 mature"
+        "en": "Foundation refactor: convention freeze, architecture teardown, /api/v1 cut (breaking external contract), frontend modernization, ops/testing/observability. Refactor milestone fully closed (#64-#72, 8 issues).",
+        "zh": "基座重构: 约定冻结, 架构拆解, /api/v1 切分 (对外契约 breaking), 前端现代化, 运维/测试/观测。Refactor milestone 已全 closed (#64-#72, 8 个 issue)"
       },
-      "closure": "public",
+      "closure": "bridged",
       "formal": "checked",
       "product": "ornn",
-      "milestone": "v0.1.3",
+      "milestone": "Refactor",
       "owner": "chronoai-shining",
       "issue_count": 0,
       "focus": false,
       "archived": false,
       "promoted_at": {
-        "public": "2026-03-26"
+        "scoped": "2026-03-15",
+        "public": "2026-04-23",
+        "bridged": "2026-04-23"
       },
       "deps": [],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn discovery in:title"
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn label:phase:1"
     },
-    "Ornn-Skill-Sandbox": {
+    "Ornn-Skill-Lifecycle-Core": {
       "label": {
-        "en": "Skill Sandbox",
-        "zh": "Skill 沙盒"
+        "en": "Skill Lifecycle Core",
+        "zh": "Skill 全生命周期核心"
       },
       "desc": {
-        "en": "Interactive skill playground, Node.js + Python via chrono-sandbox",
-        "zh": "交互式 skill 测试沙盒, Node.js + Python 运行环境 (chrono-sandbox)"
+        "en": "Agent-facing API surface: search / pull / install / execute / build / upload / share. End-to-end lifecycle (#24), MCP-native discovery (#28), skill versioning + history (#25, #181, #183), sandboxed execution. M1 22/22 closed, shipped in v0.2.0.",
+        "zh": "面向 agent 的 API 全面: 搜索/拉取/安装/执行/构建/上传/分享。端到端生命周期 (#24), MCP 原生发现 (#28), 版本化与历史 (#25, #181, #183), sandbox 执行。M1 22/22 closed, v0.2.0 上线"
       },
-      "closure": "public",
+      "closure": "bridged",
       "formal": "checked",
       "product": "ornn",
-      "milestone": "v0.1.3",
+      "milestone": "M1",
       "owner": "chronoai-shining",
       "issue_count": 0,
       "focus": false,
       "archived": false,
       "promoted_at": {
-        "public": "2026-03-26"
+        "seed": "2026-02-03",
+        "obligation": "2026-02-10",
+        "scoped": "2026-03-01",
+        "public": "2026-04-23",
+        "bridged": "2026-04-23"
       },
-      "deps": [],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn sandbox in:title"
+      "deps": [
+        "Ornn-API-V1-Refactor"
+      ],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn milestone:\"M1 - Foundation\""
     },
-    "Ornn-MCP-Tools": {
+    "Ornn-Build-Pipeline": {
       "label": {
-        "en": "MCP Tools Integration",
-        "zh": "MCP 工具集成"
+        "en": "Skill Build Pipeline",
+        "zh": "Skill 构建流水线"
       },
       "desc": {
-        "en": "ornn-search-and-run / ornn-upload / ornn-build as MCP tools (Claude Code / Codex / Cursor / Antigravity)",
-        "zh": "ornn-search-and-run / ornn-upload / ornn-build 作为 MCP 工具"
+        "en": "Generate skills from OpenAPI specs (#41), from source repos (#42), generation wizard with reference selection (#45). TypeScript + Python SDK (#54, #110). M2 9/9 closed.",
+        "zh": "从 OpenAPI spec 生成 skill (#41), 从源码仓库生成 (#42), 带参考引用的生成向导 (#45)。TypeScript + Python SDK (#54, #110)。M2 9/9 closed"
       },
-      "closure": "public",
+      "closure": "bridged",
       "formal": "checked",
       "product": "ornn",
-      "milestone": "v0.1.3",
+      "milestone": "M2",
       "owner": "chronoai-shining",
       "issue_count": 0,
       "focus": false,
       "archived": false,
       "promoted_at": {
-        "public": "2026-03-26"
+        "seed": "2026-02-15",
+        "obligation": "2026-03-01",
+        "scoped": "2026-03-20",
+        "public": "2026-04-23",
+        "bridged": "2026-04-23"
       },
-      "deps": [],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn MCP in:title"
+      "deps": [
+        "Ornn-Skill-Lifecycle-Core"
+      ],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn milestone:\"M2 - Build Experience\""
     },
-    "Ornn-NyxID-Auth": {
+    "Ornn-GitHub-Sync": {
       "label": {
-        "en": "NyxID Auth Integration",
-        "zh": "NyxID 认证集成"
+        "en": "GitHub Sync (v0.5.0)",
+        "zh": "GitHub 同步 (v0.5.0)"
       },
       "desc": {
-        "en": "Auth + permission via NyxID MCP. Open bugs (#220 wrong upstream, #106 permission flip) — not yet bridged.",
-        "zh": "通过 NyxID MCP 实现认证与权限。待修 bug (#220 upstream 错, #106 权限翻) — 未达 bridged"
+        "en": "v0.5.0 marquee: single GitHub URL link + dry-run preview + manual sync (#234). Pull-from-GitHub baseline (#57) + frontend re-sync UI (#159).",
+        "zh": "v0.5.0 主打: 单一 GitHub URL link + dry-run 预览 + 手动 sync (#234)。GitHub pull 基础 (#57) + 前端 re-sync UI (#159)"
       },
-      "closure": "obligation",
+      "closure": "bridged",
       "formal": "checked",
       "product": "ornn",
-      "milestone": "v0.1.3",
+      "milestone": "v0.5.0",
+      "owner": "chronoai-shining",
+      "issue_count": 0,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {
+        "obligation": "2026-04-10",
+        "scoped": "2026-04-20",
+        "public": "2026-04-30",
+        "bridged": "2026-04-30"
+      },
+      "deps": [
+        "Ornn-Build-Pipeline"
+      ],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn github in:title"
+    },
+    "Ornn-Audit-System": {
+      "label": {
+        "en": "Skill Audit System",
+        "zh": "Skill 审核系统"
+      },
+      "desc": {
+        "en": "LLM-based quality & security audit (#32), waiver/justification flow (#33, #96), audit-as-label pivot — share is unconditional, audit is a label (#197). Per-version audit history (#181, #188). M3 31/32 closed; lone open #106 is NyxID permission cleanup.",
+        "zh": "基于 LLM 的质量与安全审核 (#32), waiver/justification 流程 (#33, #96), audit-as-label 转向 — 分享无门槛, 审核作为标签 (#197)。Per-version 审核历史 (#181, #188)。M3 31/32 closed, 仅余 #106 NyxID 权限清理"
+      },
+      "closure": "bridged",
+      "formal": "checked",
+      "product": "ornn",
+      "milestone": "M3",
+      "owner": "chronoai-shining",
+      "issue_count": 1,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {
+        "seed": "2026-02-15",
+        "obligation": "2026-03-05",
+        "scoped": "2026-03-25",
+        "public": "2026-04-23",
+        "bridged": "2026-04-30"
+      },
+      "deps": [
+        "Ornn-Skill-Lifecycle-Core"
+      ],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn milestone:\"M3 - Trust & Quality\""
+    },
+    "Ornn-AgentSeal-Trust": {
+      "label": {
+        "en": "AgentSeal Third-party Trust",
+        "zh": "AgentSeal 第三方审计"
+      },
+      "desc": {
+        "en": "Third-party security scan on every published skill: 225+ adversarial probes, six-stage detection pipeline, SARIF output. Differentiated GTM: 'every public Ornn skill is AgentSeal-scanned' (#253).",
+        "zh": "对每个 public skill 跑第三方安全扫描: 225+ adversarial probes, 六阶段检测, SARIF 输出。差异化 GTM 卖点: 'every public Ornn skill is AgentSeal-scanned' (#253)"
+      },
+      "closure": "bridged",
+      "formal": "checked",
+      "product": "ornn",
+      "milestone": "Go-Live-Prep",
+      "owner": "chronoai-shining",
+      "issue_count": 0,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {
+        "obligation": "2026-04-15",
+        "scoped": "2026-04-22",
+        "public": "2026-04-30",
+        "bridged": "2026-04-30"
+      },
+      "deps": [
+        "Ornn-Audit-System"
+      ],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn AgentSeal in:title"
+    },
+    "Ornn-Analytics-PostHog": {
+      "label": {
+        "en": "Analytics (PostHog)",
+        "zh": "数据分析 (PostHog)"
+      },
+      "desc": {
+        "en": "PostHog-only platform analytics — DB-driven telemetry, custom audit infra removed (#271). Frontend pageview tracking + caller-type header with cookie-free consent (#246). Admin audit + analytics dashboard (#247). PostHog integration (#252).",
+        "zh": "全站统一到 PostHog — DB 驱动遥测, 移除自家 audit 基础设施 (#271)。前端浏览追踪 + caller-type header + cookie-free consent (#246)。Admin 审核 + 分析 dashboard (#247)。PostHog 集成 (#252)"
+      },
+      "closure": "bridged",
+      "formal": "checked",
+      "product": "ornn",
+      "milestone": "Go-Live-Prep",
+      "owner": "chronoai-shining",
+      "issue_count": 0,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {
+        "obligation": "2026-04-12",
+        "scoped": "2026-04-20",
+        "public": "2026-04-30",
+        "bridged": "2026-04-30"
+      },
+      "deps": [
+        "Ornn-Skill-Lifecycle-Core"
+      ],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn PostHog in:title"
+    },
+    "Ornn-Quota-Admin": {
+      "label": {
+        "en": "Quota & Admin Controls",
+        "zh": "配额与 admin 控制"
+      },
+      "desc": {
+        "en": "Per-user playground / skill-gen quota with admin-granted beta credits (#250). Admin model selection from Chrono LLM catalog + per-call user picker (#251). Per-provider model management (#270). Quota redesign + admin panel restructure (#268).",
+        "zh": "per-user playground / skill-gen 配额 + admin 发 beta credits (#250)。Admin 从 Chrono LLM 目录选模型 + 调用时用户切换 (#251)。Per-provider 模型管理 (#270)。配额重做 + admin 面板重构 (#268)"
+      },
+      "closure": "bridged",
+      "formal": "checked",
+      "product": "ornn",
+      "milestone": "Go-Live-Prep",
+      "owner": "chronoai-shining",
+      "issue_count": 0,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {
+        "obligation": "2026-04-10",
+        "scoped": "2026-04-18",
+        "public": "2026-04-30",
+        "bridged": "2026-04-30"
+      },
+      "deps": [],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn quota in:title"
+    },
+    "Ornn-NyxID-Integration": {
+      "label": {
+        "en": "NyxID Integration",
+        "zh": "NyxID 集成"
+      },
+      "desc": {
+        "en": "NyxID OAuth + service-registry + v0.4 breaking env-var split (SA vs OAuth user creds) + system-skills auto-generation from NyxID service catalog (#43, #44). Open bugs: #220 service slug mismatch, #218 share/audit leak, #106 permission catalog flip.",
+        "zh": "NyxID OAuth + service-registry + v0.4 breaking env 拆分 (SA 服务凭证 vs OAuth 用户凭证) + 从 NyxID 服务目录自动生成 system-skills (#43, #44)。未修 bug: #220 service slug 错位, #218 share/audit 泄漏, #106 权限 catalog flip"
+      },
+      "closure": "bridged",
+      "formal": "checked",
+      "product": "ornn",
+      "milestone": "Go-Live-Prep",
       "owner": "chronoai-shining",
       "issue_count": 2,
       "focus": false,
       "archived": false,
-      "promoted_at": {},
+      "promoted_at": {
+        "seed": "2026-02-08",
+        "obligation": "2026-02-20",
+        "scoped": "2026-03-10",
+        "public": "2026-04-23",
+        "bridged": "2026-04-30"
+      },
       "deps": [
         "NyxID-OAuth-flow"
       ],
       "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn NyxID in:title"
     },
-    "Ornn-Website": {
+    "Ornn-Web-Frontend": {
       "label": {
-        "en": "Ornn Website",
-        "zh": "Ornn 网站"
+        "en": "Ornn Web Frontend",
+        "zh": "Ornn Web 前端"
       },
       "desc": {
-        "en": "Public skill marketplace at ornn.chrono-ai.fun",
-        "zh": "面向外部的 Skill 市场网站 ornn.chrono-ai.fun"
+        "en": "ornn.chrono-ai.fun — developer touch-point for the agent API: skill detail, docs, admin, landing. NOT a marketplace (positioning #199). Editorial Forge UI migration Phases A-F (#201-#213), landing redesign (#221), Forge Workshop v3 (#232), full i18n zh/en parity (#343-#348).",
+        "zh": "ornn.chrono-ai.fun — agent API 的 developer 触点: skill 详情 + docs + admin + landing。不是 marketplace (定位见 #199)。Editorial Forge UI 迁移 A-F 阶段 (#201-#213), landing 重做 (#221), Forge Workshop v3 (#232), 全量 i18n zh/en 对等 (#343-#348)"
       },
-      "closure": "public",
+      "closure": "bridged",
       "formal": "checked",
       "product": "ornn",
-      "milestone": "v0.1.3",
+      "milestone": "Go-Live-Prep",
       "owner": "chronoai-shining",
       "issue_count": 0,
       "focus": false,
       "archived": false,
       "promoted_at": {
-        "public": "2026-03-26"
+        "obligation": "2026-03-01",
+        "scoped": "2026-03-15",
+        "public": "2026-04-23",
+        "bridged": "2026-04-30"
       },
       "deps": [],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn website in:title"
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn label:i18n"
     },
-    "Ornn-Skill-Registry-API": {
+    "Ornn-Platform-Power": {
       "label": {
-        "en": "Skill Registry API",
-        "zh": "Skill 注册表 API"
+        "en": "Platform Power (M4)",
+        "zh": "平台力 (M4)"
       },
       "desc": {
-        "en": "API for Aevatar agents to pull skill list + metadata",
-        "zh": "供 Aevatar agent 拉取 skill 列表 + 元数据的 API"
+        "en": "Q2 attack target: skills that compose into workflows. Skill chaining (#35), webhook & event system for skill lifecycle (#36), templates & starter kits (#37). 0 closed / 3 open — pre-implementation.",
+        "zh": "Q2 攻坚目标: 把 skill 组合成 workflow。Skill chaining (#35), webhook & event 系统 (#36), 模板 & starter kit (#37)。0 closed / 3 open, 尚未实现"
       },
       "closure": "obligation",
       "formal": "none",
       "product": "ornn",
-      "milestone": "Q2-2026",
+      "milestone": "M4",
       "owner": "chronoai-shining",
-      "issue_count": 1,
-      "focus": false,
+      "issue_count": 3,
+      "focus": true,
       "archived": false,
-      "promoted_at": {},
-      "deps": [],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn registry in:title"
+      "promoted_at": {
+        "seed": "2026-02-15",
+        "obligation": "2026-04-30"
+      },
+      "deps": [
+        "Ornn-Skill-Lifecycle-Core"
+      ],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn milestone:\"M4 - Platform Power\""
     },
     "Sisyphus-V3-Branch": {
       "label": {
