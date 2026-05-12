@@ -55,7 +55,7 @@
       "deps": [
         "Aevatar-A0-Milestone",
         "Aevatar-CSharp-Scripting",
-        "Aevatar-Responses-API-Gateway",
+        "Aevatar-M14-Milestone",
         "Aevatar-Ornn-Skill-Platform",
         "Aevatar-SessionStream-Abstraction"
       ],
@@ -136,29 +136,152 @@
       ],
       "gh_query": "is:issue is:open repo:aevatarAI/aevatar label:architecture"
     },
-    "Aevatar-Responses-API-Gateway": {
+    "Aevatar-M14-Milestone": {
       "label": {
-        "en": "Responses API v1 (NyxID-fronted)",
-        "zh": "Responses API v1 (NyxID 前置)"
+        "en": "Aevatar M14 — Responses API v1 Prototype",
+        "zh": "Aevatar M14 — Responses API v1 原型"
       },
       "desc": {
-        "en": "Milestone #14 'Responses API v1 Minimal Prototype': OpenAI Responses-compatible /v1/responses ingress + NyxID auth bridge + scope resolution + tool classification + run/session ownership actor. Discussion #609, blocked on ChatRuntime refactor #608.",
-        "zh": "里程碑 #14 'Responses API v1 Minimal Prototype': OpenAI Responses 协议 /v1/responses 入口 + NyxID 鉴权桥 + scope 解析 + 工具分类 + run/session ownership actor。讨论 #609, 被 ChatRuntime 重构 #608 阻塞"
+        "en": "Aggregator: GitHub milestone #14 'Responses API v1 Minimal Prototype' — current focus. End state: user configures NyxID base URL + API key in Codex/Cursor/Opencode; request flows client -> NyxID -> Aevatar /v1/responses -> NyxID LLM -> client. Product RFC discussion #609.",
+        "zh": "聚合节点: GitHub milestone #14 'Responses API v1 Minimal Prototype' — 当前焦点。终态: 用户在 Codex/Cursor/Opencode 里配置 NyxID base URL + API key, 请求链路 client → NyxID → Aevatar /v1/responses → NyxID LLM → client。产品 RFC 讨论 #609"
       },
-      "closure": "seed",
+      "closure": "obligation",
       "formal": "none",
       "product": "aevatar",
-      "milestone": "A1",
+      "milestone": "M14",
       "owner": "eanzhao",
       "issue_count": 14,
       "focus": true,
       "archived": false,
       "promoted_at": {},
       "deps": [
-        "Aevatar-NyxID-Integration",
-        "Aevatar-Agent-Framework"
+        "Aevatar-ChatRuntime-Harness",
+        "Aevatar-Responses-Ingress",
+        "Aevatar-Responses-Auth-Scope",
+        "Aevatar-Session-Continuation",
+        "Aevatar-Tool-Classification",
+        "Aevatar-NyxID-Integration"
       ],
       "gh_query": "is:issue is:open repo:aevatarAI/aevatar milestone:\"Responses API v1 Minimal Prototype\""
+    },
+    "Aevatar-ChatRuntime-Harness": {
+      "label": {
+        "en": "ChatRuntime → Harness Refactor (M14 blocker)",
+        "zh": "ChatRuntime → Harness 重构 (M14 blocker)"
+      },
+      "desc": {
+        "en": "M14 blocker: refactor ChatRuntime / ChannelLlmReplyInboxRuntime to match Harness boundary (#568). #608 is the umbrella refactor; #596 collapses ChatRuntime into actor-owned Agent Continuation (assigned eanzhao).",
+        "zh": "M14 blocker: 把 ChatRuntime / ChannelLlmReplyInboxRuntime 重构到 Harness boundary (#568)。#608 主重构 issue, #596 (eanzhao 已 assigned) 把 ChatRuntime 收敛为 actor-owned Agent Continuation"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "M14",
+      "owner": "eanzhao",
+      "issue_count": 2,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Agent-Framework",
+        "Aevatar-Virtual-Actors"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar ChatRuntime in:title OR Harness in:title"
+    },
+    "Aevatar-Responses-Ingress": {
+      "label": {
+        "en": "/v1/responses HTTP Ingress",
+        "zh": "/v1/responses HTTP 入口"
+      },
+      "desc": {
+        "en": "M14 pillar — HTTP layer: minimal /v1/responses endpoint on Aevatar Mainnet Host (#611), normalize Responses payloads into internal chat requests (#612), serialize Responses-compatible SSE output (#614), host-level tests + docs (#615).",
+        "zh": "M14 支柱 — HTTP 层: Aevatar Mainnet Host 上最小 /v1/responses 端点 (#611), Responses 载荷归一化到内部 chat request (#612), 兼容 Responses 协议的 SSE 输出序列化 (#614), host 级测试 + 文档 (#615)"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "M14",
+      "owner": "eanzhao",
+      "issue_count": 4,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-ChatRuntime-Harness"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar responses in:title"
+    },
+    "Aevatar-Responses-Auth-Scope": {
+      "label": {
+        "en": "NyxID Auth Bridge + Scope Port",
+        "zh": "NyxID 鉴权桥 + Scope 端口"
+      },
+      "desc": {
+        "en": "M14 pillar — security: bridge NyxID request auth into the existing NyxIdLLMProvider (#613), add scope resolution port translating NyxID identity to aevatar scope (#621). §8 of RFC #609.",
+        "zh": "M14 支柱 — 安全层: 把 NyxID 请求鉴权接入现有 NyxIdLLMProvider (#613), 新增 scope 解析端口把 NyxID 身份翻译为 aevatar scope (#621)。对应 RFC #609 §8"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "M14",
+      "owner": "eanzhao",
+      "issue_count": 2,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-NyxID-Integration",
+        "Aevatar-Responses-Ingress"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar scope in:title OR auth in:title"
+    },
+    "Aevatar-Session-Continuation": {
+      "label": {
+        "en": "Session Continuation (response.id state machine)",
+        "zh": "Session Continuation (response.id 状态机)"
+      },
+      "desc": {
+        "en": "M14 pillar — long-running state: run/session ownership actor for opaque response.id (#617), persist forwarded tool calls (#618), POST /v1/responses/{id}/cancel + TTL expiry (#619), resume re-auth + cross-origin resume guard (#620). §13 of RFC #609.",
+        "zh": "M14 支柱 — 长连接状态: opaque response.id 的 run/session ownership actor (#617), 持久化 forwarded tool call (#618), POST /v1/responses/{id}/cancel + TTL 过期 (#619), resume 重新鉴权 + 跨域 resume guard (#620)。对应 RFC #609 §13"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "M14",
+      "owner": "eanzhao",
+      "issue_count": 4,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Responses-Ingress",
+        "Aevatar-Virtual-Actors"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar session in:title OR response.id in:title"
+    },
+    "Aevatar-Tool-Classification": {
+      "label": {
+        "en": "Tool Classification (forward / substitute / additive)",
+        "zh": "工具分类层 (forward / substitute / additive)"
+      },
+      "desc": {
+        "en": "M14 pillar — agent capability: tool classification layer at /v1/responses boundary (#622), substitute TodoWrite + Task with agent-scoped / topology-aware versions (#623), substitute WebFetch + WebSearch with traced versions (#624). §5 of RFC #609.",
+        "zh": "M14 支柱 — agent 能力层: /v1/responses 边界的工具分类 (#622), 把 TodoWrite + Task 替换为 agent 范围 / 拓扑感知版本 (#623), 把 WebFetch + WebSearch 替换为带 trace 版本 (#624)。对应 RFC #609 §5"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "M14",
+      "owner": "eanzhao",
+      "issue_count": 3,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Responses-Ingress",
+        "Aevatar-Agent-Framework"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar Substitute in:title OR classification in:title"
     },
     "Aevatar-Ornn-Skill-Platform": {
       "label": {
