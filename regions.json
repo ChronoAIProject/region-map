@@ -27,7 +27,10 @@
         "Aevatar-Workflow-YAML",
         "Aevatar-Virtual-Actors",
         "Aevatar-Agent-Framework",
-        "Aevatar-NyxID-Integration"
+        "Aevatar-NyxID-Integration",
+        "Aevatar-Channel-Multi-Adapter",
+        "Aevatar-Studio-Team-First",
+        "Aevatar-EventSourcing-Hardening"
       ],
       "gh_query": "is:issue is:open repo:aevatarAI/aevatar A0 in:title"
     },
@@ -51,9 +54,159 @@
       "promoted_at": {},
       "deps": [
         "Aevatar-A0-Milestone",
-        "Aevatar-CSharp-Scripting"
+        "Aevatar-CSharp-Scripting",
+        "Aevatar-Responses-API-Gateway",
+        "Aevatar-Ornn-Skill-Platform",
+        "Aevatar-SessionStream-Abstraction"
       ],
       "gh_query": "is:issue is:open repo:aevatarAI/aevatar A1 in:title"
+    },
+    "Aevatar-Channel-Multi-Adapter": {
+      "label": {
+        "en": "Channel Multi-Adapter (Lark / Telegram / …)",
+        "zh": "多 Channel 适配器 (Lark / Telegram / …)"
+      },
+      "desc": {
+        "en": "RFC #254 + ADR 0008-0013: channel-agnostic abstraction (IChannelTransport / IChannelOutboundPort / IMessageComposer / ConversationReference) replacing the 53-file ChannelRuntime megamodule. Milestone #6 'Channel Runtime Foundation' tracks rollout.",
+        "zh": "RFC #254 + ADR 0008-0013: channel 无关抽象 (IChannelTransport / IChannelOutboundPort / IMessageComposer / ConversationReference), 替换 53 个文件的 ChannelRuntime 大模块。里程碑 #6 'Channel Runtime Foundation' 跟踪推进"
+      },
+      "closure": "scoped",
+      "formal": "checked",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "eanzhao",
+      "issue_count": 22,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "scoped": "2026-04-20"
+      },
+      "deps": [
+        "Aevatar-Agent-Framework",
+        "Aevatar-Virtual-Actors"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar milestone:\"Channel Runtime Foundation\""
+    },
+    "Aevatar-Studio-Team-First": {
+      "label": {
+        "en": "Studio Team-First Console",
+        "zh": "Studio Team-First 控制台"
+      },
+      "desc": {
+        "en": "ADR 0017 + 17 design docs: surface Team as first-class backend aggregate under Scope. Member workbench, team directory, workspace wording. Milestones #2 / #3 / #8 / #10 / #11 / #12 actively shipping.",
+        "zh": "ADR 0017 + 17 篇设计文档: Team 作为 Scope 下一等聚合, Member workbench, Team Directory, Workspace 语义。里程碑 #2 / #3 / #8 / #10 / #11 / #12 持续在发"
+      },
+      "closure": "bridged",
+      "formal": "checked",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "eanzhao",
+      "issue_count": 8,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "scoped": "2026-04-29",
+        "bridged": "2026-05-11"
+      },
+      "deps": [
+        "Aevatar-Testnet-Stability"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar label:\"team\" OR (Studio in:title OR Team in:title)"
+    },
+    "Aevatar-EventSourcing-Hardening": {
+      "label": {
+        "en": "EventSourcing / CQRS Hardening",
+        "zh": "EventSourcing / CQRS 加固"
+      },
+      "desc": {
+        "en": "Architecture-track work: unify async write/observation/read-model freshness (#594), standardize ES projection mappings (#533), reduce projection boilerplate (#591), resolve OCC pending-state leaks (#381). Symphony-team backlog.",
+        "zh": "架构线工作: 统一 async write/observation/read-model 新鲜度 (#594), 标准化 ES projection mapping (#533), 减少 projection 模板 (#591), 修复 OCC pending 残留 (#381)。Symphony 团队 backlog"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "chronoai-shining",
+      "issue_count": 5,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Agent-Framework"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar label:architecture"
+    },
+    "Aevatar-Responses-API-Gateway": {
+      "label": {
+        "en": "Responses API v1 (NyxID-fronted)",
+        "zh": "Responses API v1 (NyxID 前置)"
+      },
+      "desc": {
+        "en": "Milestone #14 'Responses API v1 Minimal Prototype': OpenAI Responses-compatible /v1/responses ingress + NyxID auth bridge + scope resolution + tool classification + run/session ownership actor. Discussion #609, blocked on ChatRuntime refactor #608.",
+        "zh": "里程碑 #14 'Responses API v1 Minimal Prototype': OpenAI Responses 协议 /v1/responses 入口 + NyxID 鉴权桥 + scope 解析 + 工具分类 + run/session ownership actor。讨论 #609, 被 ChatRuntime 重构 #608 阻塞"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A1",
+      "owner": "eanzhao",
+      "issue_count": 14,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-NyxID-Integration",
+        "Aevatar-Agent-Framework"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar milestone:\"Responses API v1 Minimal Prototype\""
+    },
+    "Aevatar-Ornn-Skill-Platform": {
+      "label": {
+        "en": "Day One → Ornn Skill Migration",
+        "zh": "Day One → Ornn skill 迁移"
+      },
+      "desc": {
+        "en": "Migrate hardcoded AgentBuilder templates (/daily, /social-media) from C# to Ornn skill YAML runtime (#367, #598). SkillRunner hardening (#439, #444-#450). PR #576 (Lark Ornn autoload) shipped 2026-05-07.",
+        "zh": "AgentBuilder 模板 (/daily, /social-media) 从硬编码 C# 迁移到 Ornn skill YAML 运行时 (#367, #598)。SkillRunner 加固 (#439, #444-#450)。PR #576 (Lark Ornn autoload) 2026-05-07 已合并"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A1",
+      "owner": "eanzhao",
+      "issue_count": 8,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Workflow-YAML",
+        "Aevatar-CSharp-Scripting"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar Ornn in:title OR daily in:title OR SkillRunner in:title"
+    },
+    "Aevatar-SessionStream-Abstraction": {
+      "label": {
+        "en": "SessionStream Abstraction (RFC)",
+        "zh": "SessionStream 抽象 (RFC)"
+      },
+      "desc": {
+        "en": "RFC #560: unify external long-lived streams (WebSocket / WebRTC / SSE / polling) as actor-first SessionStreamGAgent. Co-assigned jason-aelf / louis4li / eanzhao; team-discussion phase, ADR not yet written.",
+        "zh": "RFC #560: 把外部长连接流 (WebSocket / WebRTC / SSE / polling) 统一为 actor 一等 SessionStreamGAgent。jason-aelf / louis4li / eanzhao 三人共同 assignee, 团队讨论阶段, ADR 尚未撰写"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A1",
+      "owner": "eanzhao",
+      "issue_count": 1,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Agent-Framework",
+        "Aevatar-Voice-Stage-D"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar SessionStream in:title OR \"long connection\" in:title"
     },
     "Aevatar-Agent-Framework": {
       "label": {
@@ -85,18 +238,20 @@
         "zh": "C# 脚本运行时"
       },
       "desc": {
-        "en": "Dynamic C# script execution inside Virtual Actors for custom agent behavior",
-        "zh": "在 Virtual Actor 内动态执行 C# 脚本, 支持自定义 agent 行为"
+        "en": "Dynamic C# script execution inside Virtual Actors. Powering /daily + /social-media AgentBuilder templates in production. PR #515 (script lifecycle build surface) shipped 2026-04-29.",
+        "zh": "Virtual Actor 内动态执行 C# 脚本, 生产环境驱动 /daily + /social-media AgentBuilder 模板。PR #515 (script lifecycle build surface) 2026-04-29 已合并"
       },
-      "closure": "scoped",
-      "formal": "none",
+      "closure": "bridged",
+      "formal": "checked",
       "product": "aevatar",
-      "milestone": "A1",
+      "milestone": "A0",
       "owner": "eanzhao",
       "issue_count": 4,
       "focus": false,
       "archived": false,
-      "promoted_at": {},
+      "promoted_at": {
+        "bridged": "2026-04-29"
+      },
       "deps": [
         "Aevatar-Virtual-Actors"
       ],
@@ -128,10 +283,10 @@
         "zh": "Aevatar × NyxID 集成"
       },
       "desc": {
-        "en": "LLM / Tool / Auth Provider via NyxID, agent tool calls routed through NyxID proxy",
-        "zh": "通过 NyxID 提供 LLM / Tool / Auth Provider, agent 工具调用经 NyxID proxy 路由"
+        "en": "LLM / Tool / Auth Provider via NyxID, agent tool calls routed through NyxID proxy. PRs #561 / #570 / #571 (OAuth binding rebuild + self-heal) shipped early May. Recent bugs #538 / #543 / #549 (NyxIdSpecCatalog / OAuth rolling-deploy race) prevent mature.",
+        "zh": "通过 NyxID 提供 LLM / Tool / Auth Provider, agent 工具调用经 NyxID proxy 路由。PR #561 / #570 / #571 (OAuth binding rebuild + 自愈) 5 月初已合。近期 bug #538 / #543 / #549 (NyxIdSpecCatalog / OAuth 滚动部署竞争) 不满足 mature"
       },
-      "closure": "public",
+      "closure": "bridged",
       "formal": "checked",
       "product": "aevatar",
       "milestone": "A0",
@@ -140,7 +295,8 @@
       "focus": true,
       "archived": false,
       "promoted_at": {
-        "public": "2026-04-02"
+        "public": "2026-04-02",
+        "bridged": "2026-05-06"
       },
       "deps": [
         "NyxID-Hosted-Instance"
