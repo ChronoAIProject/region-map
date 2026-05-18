@@ -51,14 +51,15 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          if [[ -z "$(git status --porcelain regions.json)" ]]; then
+          CHANGED=$(git status --porcelain regions.json ornn-issues.json)
+          if [[ -z "$CHANGED" ]]; then
             echo "no changes to commit"
             exit 0
           fi
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add regions.json
-          git commit -m "auto: sync milestone issues into region desc
+          git add regions.json ornn-issues.json
+          git commit -m "auto: sync milestone issues into region desc + issue graph
 
           Triggered by: ${{ github.event_name }}
           Run: ${{ github.run_id }}"

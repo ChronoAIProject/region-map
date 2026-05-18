@@ -2,9 +2,13 @@
 """Sync GitHub milestone issues into the matching region's description.
 
 For every region with a `milestone_ref` field, fetch all issues in that
-milestone (open + closed) and replace the content between the
-`<!-- AUTO_GH_ISSUES:START -->` and `<!-- AUTO_GH_ISSUES:END -->` markers
-in both `desc.en` and `desc.zh`.
+milestone (open + closed) and:
+  1. Replace the content between the `<!-- AUTO_GH_ISSUES:START -->`
+     and `<!-- AUTO_GH_ISSUES:END -->` markers in `desc.{en,zh}` with a
+     human-readable issue list (for the side panel).
+  2. Write a structured JSON file `ornn-issues.json` at repo root with
+     per-region issues + extracted dependencies (for the compound-node
+     visualization).
 
 milestone_ref schema:
     "milestone_ref": {
@@ -12,9 +16,17 @@ milestone_ref schema:
         "milestone": "M0 — Engineering Foundation & Infra"
     }
 
+Dependency extraction from issue body (case-insensitive):
+    - "Depends on #N"  / "Depends-on: #N"   → blocked_by[N]
+    - "Blocks #N"      / "Blocks: #N"       → blocks[N]
+    - "Tracks #N"      / "Tracks: #N"       → tracks[N]
+    - "Tracked by #N"  / "Tracked-by: #N"   → tracked_by[N]
+    - Checklist items "- [ ] #N" / "- [x] #N" → tracks[N]
+    - Plain "#N" mentions are NOT captured (too noisy for the viz)
+
 Usage:
-    python3 tools/sync_milestone_issues.py            # update regions.json in place
-    python3 tools/sync_milestone_issues.py --check    # exit 1 if any region would change (CI)
+    python3 tools/sync_milestone_issues.py            # update regions.json + ornn-issues.json
+    python3 tools/sync_milestone_issues.py --check    # exit 1 if any change needed (CI)
     python3 tools/sync_milestone_issues.py --region <key>  # sync just one region
 
 Requires `gh` CLI authenticated with access to all referenced repos
@@ -23,6 +35,7 @@ Requires `gh` CLI authenticated with access to all referenced repos
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import re
 import subprocess
@@ -31,6 +44,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
 REGIONS_FILE = REPO_ROOT / "regions.json"
+ISSUES_FILE = REPO_ROOT / "ornn-issues.json"
 
 AUTO_START = "<!-- AUTO_GH_ISSUES:START -->"
 AUTO_END = "<!-- AUTO_GH_ISSUES:END -->"
@@ -39,9 +53,48 @@ AUTO_BLOCK_RE = re.compile(
     re.DOTALL,
 )
 
+# Dependency extraction patterns
+DEP_PATTERNS = {
+    "blocked_by": [
+        re.compile(r"(?im)\bdepends?[\s\-_:]+on\s*#(\d+)"),
+        re.compile(r"(?im)\bblocked[\s\-_:]+by\s*#(\d+)"),
+    ],
+    "blocks": [
+        re.compile(r"(?im)\bblocks\s*#(\d+)"),
+        re.compile(r"(?im)\bblocks:\s*#(\d+)"),
+    ],
+    "tracks": [
+        re.compile(r"(?im)\btracks\s*#(\d+)"),
+        re.compile(r"(?im)\btracks:\s*#(\d+)"),
+    ],
+    "tracked_by": [
+        re.compile(r"(?im)\btracked[\s\-_:]+by\s*#(\d+)"),
+    ],
+}
+# Checklist items in body imply "tracks": the parent issue tracks the child
+CHECKLIST_RE = re.compile(r"^\s*[-*]\s*\[[ xX]\][^\n]*?#(\d+)", re.MULTILINE)
+
+
+def extract_deps(body: str | None) -> dict:
+    """Return dict with keys blocks / blocked_by / tracks / tracked_by, values: sorted list of ints."""
+    deps = {k: set() for k in DEP_PATTERNS}
+    if not body:
+        return {k: [] for k in deps}
+    for kind, patterns in DEP_PATTERNS.items():
+        for pat in patterns:
+            for m in pat.finditer(body):
+                deps[kind].add(int(m.group(1)))
+    # Checklist items → tracks
+    for m in CHECKLIST_RE.finditer(body):
+        deps["tracks"].add(int(m.group(1)))
+    return {k: sorted(v) for k, v in deps.items()}
+
 
 def fetch_milestone_issues(repo: str, milestone_title: str) -> tuple[list, int | None]:
-    """Return (issues, milestone_number). Issues sorted: open first, then closed, both by number desc."""
+    """Return (issues, milestone_number). Issues include body for dep extraction.
+
+    Sorted: open first, then closed, both by number desc.
+    """
     ms_raw = subprocess.check_output(
         ["gh", "api", f"repos/{repo}/milestones?state=all", "--paginate",
          "-q", ".[] | {number, title, state, description, html_url}"],
@@ -57,10 +110,16 @@ def fetch_milestone_issues(repo: str, milestone_title: str) -> tuple[list, int |
     issues_raw = subprocess.check_output(
         ["gh", "issue", "list", "--repo", repo,
          "--milestone", milestone_title, "--state", "all", "--limit", "500",
-         "--json", "number,title,state,url"],
+         "--json", "number,title,state,url,body,labels"],
         text=True,
     )
     issues = json.loads(issues_raw)
+    # Attach extracted deps to each issue
+    for i in issues:
+        i["deps"] = extract_deps(i.get("body"))
+        i["labels"] = [l["name"] for l in (i.get("labels") or [])]
+        # Drop body — we don't need it anymore + keeps JSON small
+        i.pop("body", None)
     issues.sort(key=lambda i: (i["state"] != "OPEN", -i["number"]))
     return issues, ms_num
 
@@ -121,14 +180,36 @@ def replace_block(text: str, new_inner: str) -> str:
     return text.rstrip() + "\n\n" + new_block
 
 
-def sync_region(region: dict, key: str) -> bool:
-    """Update region's desc in place. Return True if changed."""
+def sync_region(region: dict, key: str, issues_index: dict) -> bool:
+    """Update region's desc in place + populate issues_index entry. Return True if regions.json changed."""
     ref = region.get("milestone_ref")
     if not ref:
         return False
     repo = ref["repo"]
     title = ref["milestone"]
     issues, ms_num = fetch_milestone_issues(repo, title)
+
+    # Populate structured issues index for the compound-node viz
+    if ms_num is not None:
+        ms_url = f"https://github.com/{repo}/milestone/{ms_num}"
+        issues_index[key] = {
+            "milestone": {
+                "title": title,
+                "number": ms_num,
+                "url": ms_url,
+                "repo": repo,
+            },
+            "issues": {
+                str(i["number"]): {
+                    "number": i["number"],
+                    "title": i["title"],
+                    "state": i["state"],
+                    "url": i["url"],
+                    "labels": i["labels"],
+                    "deps": i["deps"],
+                } for i in issues
+            },
+        }
 
     changed = False
     for lang in ("en", "zh"):
@@ -163,28 +244,63 @@ def main():
         print("no regions with milestone_ref found")
         return
 
+    # Load existing issues index so single-region runs don't wipe other regions' data
+    if ISSUES_FILE.exists():
+        try:
+            existing_index = json.loads(ISSUES_FILE.read_text())
+            issues_index = existing_index.get("regions", {})
+        except json.JSONDecodeError:
+            issues_index = {}
+    else:
+        issues_index = {}
+
     print(f"syncing {len(targets)} regions...")
-    any_changed = False
+    any_regions_changed = False
     for key in targets:
         if key not in regions:
             print(f"  SKIP: {key} not in regions.json")
             continue
-        changed = sync_region(regions[key], key)
+        changed = sync_region(regions[key], key, issues_index)
         marker = "✓ changed" if changed else "  no-op "
-        print(f"  {marker} {key}")
-        any_changed = any_changed or changed
+        n_issues = len(issues_index.get(key, {}).get("issues", {}))
+        print(f"  {marker} {key}  ({n_issues} issues)")
+        any_regions_changed = any_regions_changed or changed
 
-    if not any_changed:
+    # Always write issues file (it captures every run's data)
+    new_index = {
+        "synced_at": datetime.datetime.utcnow().isoformat() + "Z",
+        "regions": issues_index,
+    }
+
+    # Compare to existing
+    issues_file_changed = True
+    if ISSUES_FILE.exists():
+        try:
+            old = json.loads(ISSUES_FILE.read_text())
+            # Compare excluding synced_at (which always changes)
+            if old.get("regions") == new_index["regions"]:
+                issues_file_changed = False
+        except json.JSONDecodeError:
+            pass
+
+    if args.check:
+        if any_regions_changed or issues_file_changed:
+            print("\nCHECK mode: outputs are out of date")
+            sys.exit(1)
         print("\nno changes")
         return
 
-    if args.check:
-        print("\nCHECK mode: regions.json is out of date")
-        sys.exit(1)
+    if any_regions_changed:
+        REGIONS_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+        print("regions.json updated")
+    else:
+        print("regions.json no-op")
 
-    # Write back, preserving Unicode + 2-space indent (matches existing file style)
-    REGIONS_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
-    print("\nregions.json updated")
+    if issues_file_changed:
+        ISSUES_FILE.write_text(json.dumps(new_index, indent=2, ensure_ascii=False) + "\n")
+        print("ornn-issues.json updated")
+    else:
+        print("ornn-issues.json no-op")
 
 
 if __name__ == "__main__":
