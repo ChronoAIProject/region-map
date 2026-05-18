@@ -1190,12 +1190,12 @@
     },
     "Automath-Oracle-Pipeline": {
       "label": {
-        "en": "Automated Paper Pipeline (Oracle)",
-        "zh": "自动化论文流水线 (Oracle)"
+        "en": "Automated Paper Pipeline",
+        "zh": "自动化论文流水线"
       },
       "desc": {
-        "en": "End-to-end paper authoring → AI review → journal submission, driven by ChatGPT Oracle + Tampermonkey. 27 papers / 9 submitted to JNT, ETDS, SIADS, APAL. 2026 Q2 focus #1.",
-        "zh": "端到端论文撰写 → AI 审稿 → 期刊投稿, ChatGPT Oracle + Tampermonkey 驱动。已生成 27 篇 / 投稿 9 篇 (JNT / ETDS / SIADS / APAL)。2026 Q2 三大焦点之一。"
+        "en": "Automated paper authoring + review + submission. Oracle + Tampermonkey drives the review/submission loop. Active on branches dev-automation-clean and dev-automation-integration: Oracle Pipeline v2 (#45) plus 10 automation-integration PRs merged in 2026 Q2 wire CI to the paper authoring loop. 2026 Q2 focus #1.",
+        "zh": "自动化论文撰写 + 审稿 + 投稿。Oracle + Tampermonkey 驱动审稿与投稿循环。运行在 dev-automation-clean 与 dev-automation-integration 分支：Oracle Pipeline v2 (#45) 加上 2026 Q2 合并的 10 个 automation-integration PR，把 CI 绑到论文撰写循环。2026 Q2 三大焦点之一。"
       },
       "closure": "public",
       "formal": "checked",
@@ -1206,13 +1206,13 @@
       "focus": true,
       "archived": false,
       "promoted_at": {
-        "public": "2026-04-01"
+        "public": "2026-04-19"
       },
       "deps": [
         "Automath-Theorem-Library",
         "Automath-AI-Derive-Loop"
       ],
-      "gh_query": "is:issue is:open repo:the-omega-institute/automath oracle in:title"
+      "gh_query": "is:pr repo:the-omega-institute/automath head:dev-automation-integration OR head:dev-automation-clean"
     },
     "Automath-AI-Derive-Loop": {
       "label": {
@@ -1245,32 +1245,34 @@
         "zh": "公开问题攻坚与社区对接"
       },
       "desc": {
-        "en": "Direct Automath's derive-loop at named external open problems (SAIR list, Erdős problems, sub-questions of millennium problems). Output: Lean 4 formalized proofs + arXiv preprints + targeted community engagement (DM/PR). 2026 Q2 focus #2.",
-        "zh": "把 Automath 推导循环对准外部公开 open problem (SAIR 名单 / Erdős problems / 千禧难题子问题)。产出 Lean 4 形式化证明 + arXiv 预印本 + 针对性社区对接 (DM/PR)。2026 Q2 三大焦点之二。"
+        "en": "Target named external open problems with the derive-loop → Lean-formalized proofs → arXiv + community outreach. Pipeline operational across branches automate-outreach, outreach-clean, distill-clean, openproblem-target — 7 PRs merged in 2026 Q2 cover community outreach automation (#42), codex log persistence + skill docs (#50 / #55 / #62), distillation writebacks + tooling (#65 / #68), and the openproblem-target landing (#71). 2026 Q2 focus #2.",
+        "zh": "用推导循环对准外部公开 open problem → Lean 形式化 → arXiv + 社区对接。管线运行在 automate-outreach、outreach-clean、distill-clean、openproblem-target 分支：2026 Q2 合并 7 个 PR，覆盖社区对接自动化 (#42)、codex 日志持久化 + skill 文档 (#50 / #55 / #62)、distillation writebacks + 工具链 (#65 / #68)，以及 openproblem-target 着陆 (#71)。2026 Q2 三大焦点之二。"
       },
-      "closure": "seed",
-      "formal": "none",
+      "closure": "scoped",
+      "formal": "sop",
       "product": "automath",
       "milestone": "Q2-2026",
       "owner": "loning",
       "issue_count": 0,
       "focus": true,
       "archived": false,
-      "promoted_at": {},
+      "promoted_at": {
+        "scoped": "2026-05-15"
+      },
       "deps": [
         "Automath-AI-Derive-Loop",
         "Automath-Oracle-Pipeline"
       ],
-      "gh_query": "is:issue is:open repo:the-omega-institute/automath outreach OR open-problem in:title"
+      "gh_query": "is:pr repo:the-omega-institute/automath head:outreach-clean OR head:openproblem-target OR head:automate-outreach OR head:distill-clean"
     },
     "Automath-Social-Auto-Publish": {
       "label": {
         "en": "Automated Social Media Publishing",
-        "zh": "自动化社交媒体宣发管线"
+        "zh": "自动化社交媒体宣发"
       },
       "desc": {
-        "en": "NotebookLM (narration) + SlideSync (visuals) + Playwright (Douyin upload) + creator-backend queue verify + metrics ingest. 13 I-Ching videos already scheduled (2026-05-09 → 05-22). douyin-publisher v2 scaffolded with three-leg verdict (JUDGEMENT+COVER_VERIFY+QUEUE_VERIFY). 2026 Q2 focus #3.",
-        "zh": "NotebookLM (旁白) + SlideSync (画面) + Playwright (抖音上传) + 创作者后台队列核验 + 数据回收。已有 13 条易经视频排定 (2026-05-09 → 05-22)。douyin-publisher v2 已 scaffold, 三元组验收 (JUDGEMENT+COVER_VERIFY+QUEUE_VERIFY)。2026 Q2 三大焦点之三。"
+        "en": "End-to-end ancient-texts social media pipeline at ChronoAIProject/omega-ancient-texts-analysis (pipeline.py + publish/ + n8n/ + publication/). Stack: NotebookLM (narration, parallel trigger + async recovery) + SlideSync (visuals) + Playwright (Douyin upload) + creator-backend queue verify. 13 I-Ching videos scheduled 2026-05-09 → 05-22; three-leg verdict JUDGEMENT + COVER_VERIFY + QUEUE_VERIFY. 2026 Q2 focus #3.",
+        "zh": "端到端的古典文本社交媒体管线，落在 ChronoAIProject/omega-ancient-texts-analysis (pipeline.py + publish/ + n8n/ + publication/)。技术栈：NotebookLM (旁白，并发触发 + 异步恢复) + SlideSync (画面) + Playwright (抖音上传) + 创作者后台队列核验。13 条易经视频已排到 2026-05-09 → 05-22；三元组验收 JUDGEMENT + COVER_VERIFY + QUEUE_VERIFY。2026 Q2 三大焦点之三。"
       },
       "closure": "public",
       "formal": "sop",
@@ -1287,7 +1289,7 @@
         "Automath-Theorem-Library",
         "Automath-AI-Derive-Loop"
       ],
-      "gh_query": "is:issue is:open repo:the-omega-institute/automath social OR douyin in:title"
+      "gh_query": "repo:ChronoAIProject/omega-ancient-texts-analysis"
     },
     "Symphony-Core": {
       "label": {
