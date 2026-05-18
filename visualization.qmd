@@ -84,7 +84,10 @@ format:
     position: absolute;
     top: 12px; left: 12px;
     display: flex; flex-direction: column; gap: 4px;
-    z-index: 10;
+    /* cytoscape-expand-collapse paints a cue canvas at z-index: 999
+       inside #cy-wrap. The zoom buttons must sit above it or clicks
+       get swallowed by the canvas. */
+    z-index: 1000;
   }
   .zoom-controls button {
     width: 32px; height: 32px;
