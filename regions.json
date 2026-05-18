@@ -1118,6 +1118,115 @@
       ],
       "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn milestone:\"M4 - Platform Power\""
     },
+    "Ornn-Code-Review-Hardening": {
+      "label": {
+        "en": "Code Review Hardening (5 tracks)",
+        "zh": "代码审计收尾 (5 条轨道)"
+      },
+      "desc": {
+        "en": "36 findings from automated code review (2026-05-13), split across 5 sub-milestones: Security (5, #438-#442, due 2026-05-22), Vulnerability (5, #443-#447, due 2026-05-29), Coding Standards (7, #448-#454, due 2026-06-05), Industry Standards (10, #456-#465, due 2026-06-12 — RFC 7807 / cursor pagination / integrity hash / dist-tags / Idempotency-Key), OSS Readiness (9, #466-#474, due 2026-06-19 — docker-compose / examples / SDK npm+PyPI publish / public demo). Launch gate, parallel to QA — both must pass to unblock Marketing. Industry Standards + OSS Readiness specifically gate Show HN credibility.",
+        "zh": "2026-05-13 一轮自动代码审计产出的 36 个 finding, 拆 5 个子 milestone: Security (5, #438-#442, due 2026-05-22), Vulnerability (5, #443-#447, due 2026-05-29), Coding Standards (7, #448-#454, due 2026-06-05), Industry Standards (10, #456-#465, due 2026-06-12 — RFC 7807 / cursor 分页 / integrity hash / dist-tags / Idempotency-Key), OSS Readiness (9, #466-#474, due 2026-06-19 — docker-compose / examples / SDK 上 npm+PyPI / 公开 demo)。Launch gate, 与 QA 并行 — 两个都过才能解锁 Marketing。Industry Standards + OSS Readiness 直接决定 Show HN 的可信度"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "ornn",
+      "milestone": "Code-Review",
+      "owner": "chronoai-shining",
+      "issue_count": 36,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "obligation": "2026-05-13"
+      },
+      "deps": [
+        "Ornn-Skill-Lifecycle-Core",
+        "Ornn-Build-Pipeline",
+        "Ornn-Web-Frontend"
+      ]
+    },
+    "Ornn-Launch-Marketing": {
+      "label": {
+        "en": "Launch Marketing Playbook",
+        "zh": "Launch 推广 Playbook"
+      },
+      "desc": {
+        "en": "Ornn public-launch marketing playbook (private repo ChronoAIProject/Ornn-Marketing, created 2026-05-15). 10-channel coordinated push: HN Show HN, Product Hunt (3 categories), Reddit r/LocalLLaMA + r/mcp + r/AI_Agents, GitHub Awesome Lists ×3, X thread, Anthropic Discord, 即刻, V2EX. Status: pre-launch — 0 posts, D-Day not set, all account audits ⬜. Launch gift: 400 free GPT-5.5 conversations for first 500 sign-ups, NyxID invite NYX-2XXJI08A. Blocked by: account warmup (HN ≥6mo+karma, Reddit ≥30d+karma, V2EX/即刻 history), Ornn stars ≥50 (Awesome Lists prereq), QA + Code Review hardening green. Account warmup is the only non-compressible calendar item.",
+        "zh": "Ornn 公开发布推广 playbook (私仓 ChronoAIProject/Ornn-Marketing, 2026-05-15 建)。10 渠道协同: HN Show HN, Product Hunt (3 category), Reddit r/LocalLLaMA + r/mcp + r/AI_Agents, GitHub Awesome Lists ×3, X thread, Anthropic Discord, 即刻, V2EX。状态: pre-launch — 0 posts, D-Day 未定, 所有账号 audit ⬜。Launch 福利: 前 500 名注册赠 400 次免费 GPT-5.5 对话, NyxID 邀请码 NYX-2XXJI08A。阻塞: 账号 warmup (HN ≥6mo+karma, Reddit ≥30d+karma, V2EX/即刻 历史), Ornn stars ≥50 (Awesome Lists 前置), QA + Code Review 收尾全绿。账号 warmup 是唯一不可压缩的日历时间"
+      },
+      "closure": "seed",
+      "formal": "sop",
+      "product": "ornn",
+      "milestone": "Launch",
+      "owner": "chronoai-shining",
+      "issue_count": 0,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "seed": "2026-05-15"
+      },
+      "deps": [
+        "Ornn-QA-PreLaunch",
+        "Ornn-Code-Review-Hardening",
+        "Ornn-Web-Frontend"
+      ]
+    },
+    "Ornn-QA-PreLaunch": {
+      "label": {
+        "en": "QA Pre-Launch Gate",
+        "zh": "QA 上线准出"
+      },
+      "desc": {
+        "en": "Pre-launch functional QA umbrella (#534, started 2026-05-14): 12 module-level test trackers (#535-#546) covering login/permissions, skill creation+GitHub import, format validation, playground+sandbox, security, registry+detail, owner mgmt, admin dashboard+quota+codes, CLI/agent/NyxID proxy, notifications, admin skill mgmt+config, static pages. Explicit go-live exit criteria written into the umbrella. Bugs discovered (e.g. #563-#567) become standalone issues outside this umbrella. Parallel to (not part of) the 5 Review · * code-audit tracks — same gate level, different axis (functional UI vs code-level).",
+        "zh": "上线前功能 QA 总章 (#534, 2026-05-14 启动): 12 个模块测试跟踪 (#535-#546), 覆盖登录+权限 / Skill 创建+GitHub 导入 / 包格式校验 / Playground+sandbox / 安全权限 / Registry+详情页 / Owner 管理 / Admin Dashboard+配额+兑换码 / CLI+Agent+NyxID proxy / 通知 / Admin 配置 / 静态页面。总章里写了明确「上线准出标准」。发现的 bug (如 #563-#567) 独立成 issue, 不挂在本总章下。与 5 条 Review · * 代码审计轨道并行 — 同 gate 级别, 不同维度 (功能 UI vs 代码层)"
+      },
+      "closure": "obligation",
+      "formal": "sop",
+      "product": "ornn",
+      "milestone": "QA",
+      "owner": "chronoai-shining",
+      "issue_count": 13,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "obligation": "2026-05-14"
+      },
+      "deps": [
+        "Ornn-Skill-Lifecycle-Core",
+        "Ornn-Build-Pipeline",
+        "Ornn-Audit-System",
+        "Ornn-AgentSeal-Trust",
+        "Ornn-Analytics-PostHog",
+        "Ornn-Quota-Admin",
+        "Ornn-NyxID-Integration",
+        "Ornn-Web-Frontend"
+      ],
+      "gh_query": "is:issue is:open repo:ChronoAIProject/Ornn \"[QA]\" in:title"
+    },
+    "Ornn-Community-Engagement": {
+      "label": {
+        "en": "Community Engagement",
+        "zh": "Community 社区互动"
+      },
+      "desc": {
+        "en": "User-facing social layer on the skill registry: skill ratings, text reviews, likes / upvotes, per-skill comment threads, author reputation, activity feed. Replaces the abandoned billing/marketplace direction. Concept seed in #3 ('Skill Audit & Community' — audit half shipped in M3, 'ratings & reviews' half deferred). GitHub Discussions enabled at repo level (#377, 6 categories live) but in-product social signals are net-new. Post-launch — needs real external users to be meaningful.",
+        "zh": "Skill registry 上的社区互动层: skill 评分 / 文字评价 / 点赞 / 每个 skill 的讨论 / 作者声誉 / 活动 feed。替代已放弃的 billing/marketplace 方向。概念种子在 #3 ('Skill Audit & Community' — audit 一半已 ship 在 M3, 'ratings & reviews' 一半推迟)。GitHub Discussions 已开 (#377, 6 个 category), 但站内 social signal 完全新建。post-launch 才有意义 — 需要真实外部用户才能跑得起来"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "ornn",
+      "milestone": "Community",
+      "owner": "chronoai-shining",
+      "issue_count": 0,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Ornn-Skill-Lifecycle-Core",
+        "Ornn-Web-Frontend",
+        "Ornn-NyxID-Integration",
+        "Ornn-Launch-Marketing"
+      ]
+    },
     "Sisyphus-V3-Branch": {
       "label": {
         "en": "Sisyphus v3 Branch (active)",
