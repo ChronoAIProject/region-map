@@ -3,3 +3,5 @@ _site/
 *.log
 **/*.quarto_ipynb
 **/__pycache__/
+
+/.quarto/

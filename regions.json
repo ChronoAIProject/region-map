@@ -27,7 +27,8 @@
         "Aevatar-Workflow-YAML",
         "Aevatar-Virtual-Actors",
         "Aevatar-Agent-Framework",
-        "Aevatar-NyxID-Integration"
+        "Aevatar-NyxID-Integration",
+        "Aevatar-Event-Intake-Lab"
       ],
       "gh_query": "is:issue is:open repo:aevatarAI/aevatar A0 in:title"
     },
@@ -121,6 +122,59 @@
       "archived": false,
       "promoted_at": {},
       "deps": []
+    },
+    "Aevatar-Event-Intake-Lab": {
+      "label": {
+        "en": "Event Intake Lab",
+        "zh": "Event Intake Lab"
+      },
+      "desc": {
+        "en": "Frontend demo in Agent Studio: create a team, configure an intake role for external events such as Lark bot messages, and show the agent team's processing result. As frontend work, its direct dependency is the backend Event Intake API contract, not the lower-level Nyx / Ornn / runtime plumbing.",
+        "zh": "Agent Studio 前端 demo: 创建 team, 配置一个 intake role 接收 Lark bot 等外部事件, 并展示 agent team 的处理结果。作为前端任务, 直接依赖应该是后端 Event Intake API 合约, 而不是更底层的 Nyx / Ornn / runtime 能力。"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "abigail",
+      "issue_count": 1,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Event-Intake-API"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar \"Event Intake\" in:title"
+    },
+    "Aevatar-Event-Intake-API": {
+      "label": {
+        "en": "Event Intake API",
+        "zh": "Event Intake 后端接口"
+      },
+      "desc": {
+        "en": "Backend contract needed by the frontend lab: APIs for creating/configuring an Agent Studio team, binding an intake role to an external event source, receiving Lark bot/webhook events, dispatching them into the agent team, and exposing processing status/results back to the UI. It hides Nyx service calls, auth/proxy details, runtime orchestration, and skill/tool execution behind a frontend-facing interface.",
+        "zh": "前端 Lab 需要的后端接口合约: 创建 / 配置 Agent Studio team, 将 intake role 绑定到外部事件源, 接收 Lark bot/webhook 事件, 投递给 agent team 处理, 并向 UI 暴露处理状态和结果。它把 Nyx 服务调用、鉴权 / proxy、runtime 编排、skill/tool 执行包装在前端可用的接口后面。"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "eanzhao",
+      "issue_count": 1,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Agent-Framework",
+        "Aevatar-Workflow-YAML",
+        "Aevatar-NyxID-Integration",
+        "NyxID-Hosted-Instance",
+        "NyxID-OAuth-flow",
+        "NyxID-Reverse-Proxy",
+        "Ornn-Skill-Lifecycle-Core",
+        "Ornn-NyxID-Integration"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar \"Event Intake API\" in:title"
     },
     "Aevatar-NyxID-Integration": {
       "label": {
