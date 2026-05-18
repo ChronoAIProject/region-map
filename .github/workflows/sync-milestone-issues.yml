@@ -1,0 +1,68 @@
+name: Sync milestone issues into region desc
+
+# Pulls every GitHub milestone referenced from a region's `milestone_ref`
+# field and replaces the AUTO_GH_ISSUES block in that region's desc with
+# the live issue list. Commits the result back to the default branch.
+#
+# Triggers:
+#   - Hourly cron        — picks up new issues / closures with ≤1h lag
+#   - workflow_dispatch  — manual "sync now"
+#   - repository_dispatch with type=milestone-issues-sync
+#       — receive from upstream repos via gh workflow run on issue events
+#         (set up in Ornn / Ornn-Marketing repos to call this)
+#
+# Cross-repo / private-repo access:
+#   GITHUB_TOKEN is scoped to THIS repo only. For ChronoAIProject/Ornn-Marketing
+#   (private) we need a PAT. Store it as repo secret CROSS_REPO_PAT with
+#   `repo` scope. Fallback to default token if absent (will warn on private
+#   repos but still work for public ones).
+
+on:
+  schedule:
+    - cron: "5 * * * *"      # hourly at :05
+  workflow_dispatch:
+  repository_dispatch:
+    types: [milestone-issues-sync]
+
+permissions:
+  contents: write             # need write so we can commit + push
+
+concurrency:
+  group: sync-milestone-issues
+  cancel-in-progress: false   # don't cancel an in-flight commit
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run sync script
+        env:
+          # PAT with repo scope for cross-repo / private-repo reads.
+          # Falls back to default token if CROSS_REPO_PAT not set.
+          GH_TOKEN: ${{ secrets.CROSS_REPO_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          python3 tools/sync_milestone_issues.py
+          python3 tools/validate_regions.py
+
+      - name: Commit and push if changed
+        run: |
+          if [[ -z "$(git status --porcelain regions.json)" ]]; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add regions.json
+          git commit -m "auto: sync milestone issues into region desc
+
+          Triggered by: ${{ github.event_name }}
+          Run: ${{ github.run_id }}"
+          git push

@@ -1,0 +1,33 @@
+# Sample workflow file. Drop into the source repos (ChronoAIProject/Ornn,
+# ChronoAIProject/Ornn-Marketing) as `.github/workflows/notify-region-map.yml`.
+#
+# Whenever an issue is opened/edited/closed/labeled/milestoned, this fires a
+# repository_dispatch into ChronoAIProject/region-map, which triggers the
+# sync-milestone-issues workflow there. Result: region-map updates within
+# ~1 minute of any issue change, instead of waiting for the hourly cron.
+#
+# Requires repo secret REGION_MAP_DISPATCH_PAT — a PAT with `repo` scope on
+# ChronoAIProject/region-map. Generate at https://github.com/settings/tokens
+# (fine-grained: needs "Contents: write" on region-map; classic: `repo`).
+
+name: Notify region-map of issue change
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened, milestoned, demilestoned, labeled, unlabeled]
+  milestone:
+    types: [created, closed, opened, edited, deleted]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger region-map sync
+        env:
+          GH_TOKEN: ${{ secrets.REGION_MAP_DISPATCH_PAT }}
+        run: |
+          gh api -X POST repos/ChronoAIProject/region-map/dispatches \
+            -f event_type=milestone-issues-sync \
+            -f 'client_payload[source_repo]=${{ github.repository }}' \
+            -f 'client_payload[event]=${{ github.event_name }}' \
+            -f 'client_payload[issue_or_milestone]=${{ github.event.issue.number || github.event.milestone.number }}'
