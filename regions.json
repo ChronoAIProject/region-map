@@ -1775,6 +1775,163 @@
       "deps": [
         "Ornn-Marketing-L1-Launch"
       ]
+    },
+    "Aevatar-Router-Agent": {
+      "label": {
+        "en": "Router Agent (Thin Ingress)",
+        "zh": "Router Agent (薄入口)"
+      },
+      "desc": {
+        "en": "Unify Lark conversation + NyxID Responses ingress under a single router that forwards events to downstream agents. Collapses the two parallel ingress GAgents (ConversationGAgent + LlmSessionGAgent) into thin shells. Paired with GAgent inventory cleanup.",
+        "zh": "把 Lark conversation 与 NyxID Responses 两条入站路径收口到统一 router, 事件转发给下游 agent。让两个并行接入 GAgent (ConversationGAgent + LlmSessionGAgent) 退化为薄壳。与 GAgent 清单瘦身配套。"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "eanzhao",
+      "issue_count": 0,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Responses-Ingress",
+        "Aevatar-Channel-Multi-Adapter"
+      ],
+      "gh_query": "is:issue repo:aevatarAI/aevatar router in:title"
+    },
+    "Aevatar-Chain-Test-Coverage": {
+      "label": {
+        "en": "Chain Test Coverage",
+        "zh": "主链测试覆盖"
+      },
+      "desc": {
+        "en": "Cross-layer regression coverage for the Inbound → Router → Team chain. #666 Studio member identity / binding / current run cross-layer consistency. #667 LlmSession / ResponsesAgentToolState durable correctness regression. #668 Responses / Messages new main-chain test gaps. #669 Ornn / NyxID / tool credential boundary regression. Owner: YueZh127 (QA).",
+        "zh": "外部入站 → Router → Team 主链的跨层回归覆盖。#666 Studio member 身份 / binding / current run 跨层一致性。#667 LlmSession / ResponsesAgentToolState durable correctness 回归。#668 Responses / Messages 新主链缺口测试。#669 Ornn / NyxID / tool credential boundary 专项回归。Owner: YueZh127 (测试)。"
+      },
+      "closure": "seed",
+      "formal": "checked",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "YueZh127",
+      "issue_count": 4,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Studio-Team-First",
+        "Aevatar-Responses-Ingress"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar author:YueZh127 label:test"
+    },
+    "Aevatar-Event-Intake-API": {
+      "label": {
+        "en": "Event Intake API",
+        "zh": "Event Intake 后端接口"
+      },
+      "desc": {
+        "en": "Backend contract that the frontend Event Intake Lab calls: APIs for creating / configuring an Agent Studio team, binding an intake role to an external event source, receiving Lark bot / webhook events, dispatching them into the agent team, and exposing processing status / results back to the UI. Hides Router agent, Studio member binding, NyxID auth/proxy, and skill/tool execution behind a frontend-facing surface.",
+        "zh": "前端 Event Intake Lab 调用的后端合约: 创建 / 配置 Agent Studio team, 把 intake role 绑定到外部事件源, 接收 Lark bot / webhook 事件, 投递给 agent team 处理, 并向 UI 暴露处理状态 / 结果。把 Router agent、Studio member 绑定、NyxID auth/proxy、skill/tool 执行包装在前端可用的接口后面。"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "eanzhao",
+      "issue_count": 1,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Agent-Framework",
+        "Aevatar-Router-Agent",
+        "Aevatar-Workflow-YAML",
+        "Aevatar-NyxID-Integration",
+        "NyxID-Hosted-Instance",
+        "NyxID-OAuth-flow",
+        "NyxID-Reverse-Proxy",
+        "Ornn-M1-Skill-Lifecycle-Core"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar \"Event Intake API\" in:title"
+    },
+    "Aevatar-Event-Intake-Lab": {
+      "label": {
+        "en": "Event Intake Lab (Frontend Demo)",
+        "zh": "Event Intake Lab (前端 Demo)"
+      },
+      "desc": {
+        "en": "Frontend demo in Agent Studio: create a team, configure an intake role for external events (Lark bot messages), and show the agent team's processing result. Frontend face of the Inbound → Router → Team chain. Direct dependency is the backend Event Intake API contract.",
+        "zh": "Agent Studio 前端 demo: 创建 team, 配置 intake role 接收 Lark bot 等外部事件, 展示 agent team 的处理结果。Inbound → Router → Team 主链的前端门面。直接依赖后端 Event Intake API 合约。"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "abigail",
+      "issue_count": 1,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Event-Intake-API"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar \"Event Intake\" in:title"
+    },
+    "Aevatar-Console-Web-Member-Flows": {
+      "label": {
+        "en": "Console Web Member Flows",
+        "zh": "Console Web 成员态流程"
+      },
+      "desc": {
+        "en": "Frontend counterpart to Studio Team-First: Studio member identity cleanup, member-scoped Bind / Invoke / Observe, and chat-like current run console. Tracks open #654 and #655.",
+        "zh": "Studio Team-First 的前端对应: Studio 成员身份清理、Bind / Invoke / Observe 严格成员域化、chat-like 当前运行控制台。跟踪未关闭的 #654 / #655。"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "potter-sun",
+      "issue_count": 2,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "seed": "2026-05-14",
+        "obligation": "2026-05-14"
+      },
+      "deps": [
+        "Aevatar-Workflow-YAML",
+        "Aevatar-Agent-Framework",
+        "Aevatar-Studio-Team-First"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar console-web Invoke in:title"
+    },
+    "Aevatar-Inbound-Team-Demo": {
+      "label": {
+        "en": "Inbound → Router → Team Demo",
+        "zh": "外部入站 → Router → Team 端到端"
+      },
+      "desc": {
+        "en": "End-to-end demo convergence: NyxID Direct (/v1/responses) and Lark bot inbound channel both forward through the Router agent to a Studio/Team member, which handles the event via RoleGAgent + NyxID + Ornn. 2026 Q2 visible deliverable proving the chain works.",
+        "zh": "三条线收口的端到端演示: NyxID 直连 (/v1/responses) 与 Lark bot 入站, 都通过 Router agent 转给 Studio/Team 的 member, member 用 RoleGAgent + NyxID + Ornn 处理。2026 Q2 可演示成果, 证明整条链路通了。"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "eanzhao",
+      "issue_count": 0,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {},
+      "deps": [
+        "Aevatar-Router-Agent",
+        "Aevatar-Studio-Team-First",
+        "Aevatar-EventSourcing-Hardening",
+        "Aevatar-Chain-Test-Coverage",
+        "Aevatar-Event-Intake-Lab",
+        "Aevatar-Console-Web-Member-Flows"
+      ],
+      "gh_query": null
     }
   }
 }
