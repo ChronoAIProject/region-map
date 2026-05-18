@@ -6,23 +6,20 @@ name: Sync milestone issues into region desc
 #
 # Triggers:
 #   - Hourly cron        — picks up new issues / closures with ≤1h lag
-#   - workflow_dispatch  — manual "sync now"
-#   - repository_dispatch with type=milestone-issues-sync
-#       — receive from upstream repos via gh workflow run on issue events
-#         (set up in Ornn / Ornn-Marketing repos to call this)
+#   - workflow_dispatch  — manual "sync now" from Actions tab
 #
 # Cross-repo / private-repo access:
-#   GITHUB_TOKEN is scoped to THIS repo only. For ChronoAIProject/Ornn-Marketing
-#   (private) we need a PAT. Store it as repo secret CROSS_REPO_PAT with
-#   `repo` scope. Fallback to default token if absent (will warn on private
-#   repos but still work for public ones).
+#   GITHUB_TOKEN is scoped to THIS repo only. Reading PUBLIC upstream repos
+#   (ChronoAIProject/Ornn) needs no auth — token works as-is.
+#   Reading PRIVATE upstream repos (ChronoAIProject/Ornn-Marketing) requires
+#   a PAT with `repo` scope stored as repo secret CROSS_REPO_PAT.
+#   If CROSS_REPO_PAT is absent, sync of private-repo regions logs a WARN
+#   and the rest of the regions still update.
 
 on:
   schedule:
     - cron: "5 * * * *"      # hourly at :05
   workflow_dispatch:
-  repository_dispatch:
-    types: [milestone-issues-sync]
 
 permissions:
   contents: write             # need write so we can commit + push
