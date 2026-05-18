@@ -557,7 +557,11 @@ function escapeHtml(value) {
 function renderCy() {
   CY = cytoscape({
     container: document.getElementById("cy"),
-    elements: buildCytoscapeElements(),
+    // Use the flat-array form: cytoscape's {nodes,edges} object form has a
+    // bug where compound children (issue nodes with `parent:` set) are
+    // silently dropped at construction time. Flattening to [...nodes,
+    // ...edges] preserves them. Confirmed locally 2026-05-18.
+    elements: (() => { const e = buildCytoscapeElements(); return [...e.nodes, ...e.edges]; })(),
     style: [
       {
         selector: "node",
@@ -683,18 +687,10 @@ function renderCy() {
       },
     ],
     layout: {
-      name: "dagre",
-      // 35 nodes (NyxID + Aevatar). LR shows primitives (left) → derived
-      // (right). Spacing tuned for legibility: nodeSep generous so labels
-      // (text-valign: bottom) don't crash into the next node's circle.
-      rankDir: "LR",
-      nodeSep: 50,
-      rankSep: 180,
-      edgeSep: 14,
-      ranker: "network-simplex",
-      padding: 24,
-      fit: true,
-      animate: false,
+      // No initial layout — dagre would put issue children in one column
+      // because they have no inter-compound edges. We collapse all
+      // compounds first (below), then run dagre on the outer structure.
+      name: "preset",
     },
     // Disable wheel/pinch zoom (per request); pan-drag remains for nudging
     // so the dropdown's centered jump can be fine-tuned without the user
@@ -716,18 +712,14 @@ function renderCy() {
   // expand and see issues + their dep edges.
   try {
     EC_API = CY.expandCollapse({
-      layoutBy: {
-        name: "dagre",
-        rankDir: "LR",
-        nodeSep: 30,
-        rankSep: 80,
-        edgeSep: 8,
-        padding: 10,
-        animate: false,
-      },
+      // No auto-layout on expand/collapse — re-running dagre across the
+      // whole graph causes everything to jump. We position children
+      // manually with a grid layout right after each expand (see tap
+      // handler below).
+      layoutBy: null,
       fisheye: false,
       animate: true,
-      animationDuration: 250,
+      animationDuration: 200,
       undoable: false,
       cueEnabled: true,
       expandCollapseCuePosition: "top-left",
@@ -744,13 +736,65 @@ function renderCy() {
     console.warn("expand-collapse init failed (compound rendering disabled):", e);
   }
 
+  // Now run the real dagre layout. Compounds are collapsed → dagre only
+  // sees the outer 57-node structure, not 153 (which would stack issue
+  // children in a useless column because they have no inter-edges).
+  CY.layout({
+    name: "dagre",
+    rankDir: "LR",
+    nodeSep: 50,
+    rankSep: 180,
+    edgeSep: 14,
+    ranker: "network-simplex",
+    padding: 24,
+    fit: true,
+    animate: false,
+  }).run();
+
+  // Helper: arrange a compound's children in a grid around the parent's
+  // current position. Called after EC_API.expand() so the children don't
+  // pile up at one point.
+  window.__layoutCompoundChildren = function (parent) {
+    const children = parent.children();
+    if (children.length === 0) return;
+    const cols = Math.ceil(Math.sqrt(children.length * 1.6));  // wider than tall
+    const cellW = 50;
+    const cellH = 50;
+    const center = parent.position();
+    // Start from top-left of the grid centered on the parent's original spot
+    const rows = Math.ceil(children.length / cols);
+    const startX = center.x - (cols - 1) * cellW / 2;
+    const startY = center.y - (rows - 1) * cellH / 2;
+    children.forEach((c, i) => {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      c.position({ x: startX + col * cellW, y: startY + row * cellH });
+    });
+  };
+
   CY.on("tap", "node", evt => {
     const node = evt.target;
     if (node.data("is_issue")) {
       showIssueDetail(node);
-    } else {
-      // Region nodes (and any non-issue node)
-      showNodeDetail(node.id());
+      return;
+    }
+    // Region node: show detail panel as before.
+    showNodeDetail(node.id());
+    // If this region has issue children (collapsed or expanded), also
+    // toggle compound state on the same tap. The +/- hover cue from
+    // expand-collapse is easy to miss; click-to-toggle makes it discoverable.
+    if (EC_API && (EC_API.isExpandable(node) || EC_API.isCollapsible(node))) {
+      try {
+        if (EC_API.isExpandable(node)) {
+          EC_API.expand(node);
+          // Position the now-visible children in a grid so they don't pile up
+          if (window.__layoutCompoundChildren) {
+            window.__layoutCompoundChildren(node);
+          }
+        } else if (EC_API.isCollapsible(node)) {
+          EC_API.collapse(node);
+        }
+      } catch (e) { /* ignore */ }
     }
   });
   CY.on("tap", evt => {
@@ -976,13 +1020,48 @@ function showNodeDetail(id) {
   const otherLang = lang === "en" ? "zh" : "en";
   const primaryLabel = (r.label && r.label[lang]) || (r.label && r.label.en) || id;
   const otherLabel = (r.label && r.label[otherLang]) || "";
-  const primaryDesc = (r.desc && r.desc[lang]) || "";
+  // Strip the AUTO_GH_ISSUES marker block from rendered desc — the panel
+  // renders that data programmatically below (see issuesSection) so it
+  // gets proper HTML instead of raw markdown.
+  const rawDesc = (r.desc && r.desc[lang]) || "";
+  const primaryDesc = rawDesc.replace(/<!--\s*AUTO_GH_ISSUES:START\s*-->[\s\S]*?<!--\s*AUTO_GH_ISSUES:END\s*-->/g, "").trim();
 
   const linkRegion = k => {
     const rr = REGIONS_DOC.regions[k];
     const lbl = (rr && rr.label && rr.label[lang]) || (rr && rr.label && rr.label.en) || k;
     return `<a onclick="showNodeDetail(${JSON.stringify(k)})">${escapeHtml(lbl)}</a>`;
   };
+
+  // Issue list pulled from ORNN_ISSUES for regions with milestone_ref
+  const issuesData = ORNN_ISSUES && ORNN_ISSUES.regions && ORNN_ISSUES.regions[id];
+  let issuesSection = "";
+  if (issuesData && issuesData.issues) {
+    const ms = issuesData.milestone;
+    const issues = Object.values(issuesData.issues);
+    const open = issues.filter(i => i.state === "OPEN").sort((a, b) => b.number - a.number);
+    const closed = issues.filter(i => i.state === "CLOSED").sort((a, b) => b.number - a.number);
+    const renderIssue = (i, dim) => {
+      const num = i.number;
+      const t = escapeHtml(i.title);
+      const opacity = dim ? 'style="opacity:0.55"' : "";
+      const strike = dim ? "text-decoration:line-through;" : "";
+      return `<li ${opacity}><a href="#" onclick="event.preventDefault();jumpToIssue('${id}',${num})" style="${strike}">#${num}</a> ${t}</li>`;
+    };
+    const openLabel = lang === "zh" ? "进行中" : "Open";
+    const closedLabel = lang === "zh" ? "已关闭" : "Closed";
+    const expandHint = lang === "zh" ? "(再次点击 milestone 可折叠/展开图上的 issue 节点)" : "(click the milestone again to toggle issue nodes on the map)";
+    issuesSection = `
+      <div class="term-issues" style="margin-top:0.9rem;padding-top:0.6rem;border-top:1px solid #eee;font-size:0.85rem">
+        <div style="font-weight:600;color:#444;margin-bottom:0.3rem">
+          <a href="${escapeHtml(ms.url)}" target="_blank" rel="noopener" style="color:#2c3e50">GitHub: ${escapeHtml(ms.title)}</a>
+          <span style="color:#888;font-weight:400">— ${open.length} ${openLabel} / ${closed.length} ${closedLabel}</span>
+        </div>
+        ${open.length ? `<details open><summary style="cursor:pointer;color:#27ae60;font-weight:500">${openLabel} (${open.length})</summary><ul style="margin:0.3rem 0 0.5rem 0.8rem;padding-left:0.6rem;line-height:1.5">${open.map(i => renderIssue(i, false)).join("")}</ul></details>` : ""}
+        ${closed.length ? `<details><summary style="cursor:pointer;color:#7f8c8d">${closedLabel} (${closed.length})</summary><ul style="margin:0.3rem 0 0.5rem 0.8rem;padding-left:0.6rem;line-height:1.5">${closed.slice(0, 30).map(i => renderIssue(i, true)).join("")}${closed.length > 30 ? `<li style="color:#aaa;font-style:italic">… and ${closed.length - 30} more</li>` : ""}</ul></details>` : ""}
+        <div style="color:#aaa;font-size:0.75rem;margin-top:0.3rem">${expandHint}</div>
+      </div>
+    `;
+  }
 
   detailEl.innerHTML = `
     <div class="term-name">${escapeHtml(primaryLabel)}${
@@ -1004,6 +1083,7 @@ function showNodeDetail(id) {
     ${timeline ? `<div class="term-timeline"><strong>${t("detail_timeline")}</strong> ${escapeHtml(timeline)}</div>` : ""}
     ${upstream.length ? `<div class="term-deps"><strong>${t("detail_upstream")}</strong> ${upstream.map(linkRegion).join(" ")}</div>` : ""}
     ${downstream.length ? `<div class="term-deps"><strong>${t("detail_downstream")}</strong> ${downstream.map(linkRegion).join(" ")}</div>` : ""}
+    ${issuesSection}
   `;
 }
 
