@@ -623,15 +623,15 @@
         "zh": "OAuth 2.0 / OIDC 鉴权"
       },
       "desc": {
-        "en": "End-to-end OAuth 2.0 / OIDC server with MFA, social login, DCR. Earlier wizard bug cluster (#629/#651/#653) closed; current open bugs (#683 callback URL, #694 Lark generic error, #695 account-mismatch redirect, #735 single OAuth service per provider) keep it from mature.",
-        "zh": "完整 OAuth 2.0 / OIDC 服务端, 含 MFA / 社交登录 / DCR。早期 wizard bug 群 (#629/#651/#653) 已修, 当前未修 bug (#683 回调 URL / #694 Lark 通用错 / #695 账号错配跳转 / #735 单 provider 单 OAuth) 不满足 mature"
+        "en": "End-to-end OAuth 2.0 / OIDC server with MFA, social login, DCR. Earlier wizard bug cluster (#629/#651/#653) closed; current open bugs (#683 callback URL, #694 Lark generic error, #695 account-mismatch redirect, #735 single OAuth service per provider) keep it from mature. Query also matches catalog work (#778 OAuth user-account flow for gcp_service_account) tracked under NyxID-Internal-Datasources.",
+        "zh": "完整 OAuth 2.0 / OIDC 服务端, 含 MFA / 社交登录 / DCR。早期 wizard bug 群 (#629/#651/#653) 已修, 当前未修 bug (#683 回调 URL / #694 Lark 通用错 / #695 账号错配跳转 / #735 单 provider 单 OAuth) 不满足 mature。查询亦命中归在 NyxID-Internal-Datasources 的 catalog 工作 (#778 gcp_service_account → OAuth 用户账号流)"
       },
       "closure": "public",
       "formal": "checked",
       "product": "nyxid",
       "milestone": "M0",
       "owner": "kaiweijw",
-      "issue_count": 5,
+      "issue_count": 6,
       "focus": false,
       "archived": false,
       "promoted_at": {
@@ -646,15 +646,15 @@
         "zh": "反向代理"
       },
       "desc": {
-        "en": "Authenticated reverse proxy that forwards agent requests to external APIs",
-        "zh": "鉴权反向代理, 将 agent 请求转发到外部 API"
+        "en": "Authenticated reverse proxy that forwards agent requests to external APIs. Open: #771 surface stale-node binding on node_offline, #684 first-time AI service flow guidance, #187 template-based passthrough w/ server-side k/v substitution.",
+        "zh": "鉴权反向代理, 将 agent 请求转发到外部 API。未修: #771 node_offline 时显式提示 stale-node 绑定, #684 首次 AI service 流程引导, #187 模板化 passthrough + 服务端 k/v 替换"
       },
       "closure": "public",
       "formal": "checked",
       "product": "nyxid",
       "milestone": "M0",
       "owner": "kaiweijw",
-      "issue_count": 2,
+      "issue_count": 4,
       "focus": false,
       "archived": false,
       "promoted_at": {
@@ -669,15 +669,15 @@
         "zh": "凭证注入"
       },
       "desc": {
-        "en": "Auto credential injection — header / bearer / query / basic auth modes. Open follow-up #508 to unify HTTP and WebSocket injection under a single rule schema (from #493).",
-        "zh": "向代理请求自动注入凭证, 支持 header / bearer / query / basic 四种模式。未修 follow-up #508 — 用统一规则 schema 合并 HTTP 与 WebSocket 注入 (来自 #493)"
+        "en": "Auto credential injection — header / bearer / query / basic auth modes. Open: #508 unify HTTP/WS injection rule schema, #683 OAuth dialog callback-URL hint. New node-side credential push work (#770/#772/#773/#775) is tracked under NyxID-Org-Managed-Nodes — listed here too because proxy-side and node-side share the credential resolver.",
+        "zh": "向代理请求自动注入凭证, 支持 header / bearer / query / basic 四种模式。未修: #508 统一 HTTP/WS 注入 schema, #683 OAuth 对话框回调 URL 提示。新增 node 侧 credential push (#770/#772/#773/#775) 归入 NyxID-Org-Managed-Nodes 节点 — 因 proxy 侧与 node 侧共用 credential resolver, 此处也计入"
       },
       "closure": "public",
       "formal": "checked",
       "product": "nyxid",
       "milestone": "M0",
       "owner": "kaiweijw",
-      "issue_count": 2,
+      "issue_count": 5,
       "focus": false,
       "archived": false,
       "promoted_at": {
@@ -708,8 +708,7 @@
       "promoted_at": {
         "public": "2026-03-01"
       },
-      "deps": [],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID node in:title"
+      "deps": []
     },
     "NyxID-SSH-Tunneling": {
       "label": {
@@ -733,8 +732,7 @@
       },
       "deps": [
         "NyxID-NAT-Traversal"
-      ],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID SSH in:title"
+      ]
     },
     "NyxID-Hosted-Instance": {
       "label": {
@@ -742,8 +740,8 @@
         "zh": "托管实例 (nyx.chrono-ai.fun)"
       },
       "desc": {
-        "en": "Production hosted NyxID. Earlier quickstart bug cluster (#640/#643/#644) closed; current attention shifted to CLI Wizard / OAuth surface (#695, #706, #711, #734) — still not 30d incident-free.",
-        "zh": "nyx.chrono-ai.fun 上的生产托管实例。早期 quickstart bug 群 (#640/#643/#644) 已修, 注意力转向 CLI Wizard / OAuth 面 (#695, #706, #711, #734), 仍不满足 30 天稳定"
+        "en": "Production hosted NyxID. Earlier quickstart bug cluster (#640/#643/#644) closed. Live bugs that prevent 30d incident-free are tracked under their own regions — see NyxID-CLI-Wizard (#695, #706, #711) and NyxID-OAuth-flow (#683, #694, #695, #735); pairing bug #734 also stays open.",
+        "zh": "nyx.chrono-ai.fun 上的生产托管实例。早期 quickstart bug 群 (#640/#643/#644) 已修。阻碍 30 天稳定的实际 bug 归在各自 region — 见 NyxID-CLI-Wizard (#695, #706, #711) 与 NyxID-OAuth-flow (#683, #694, #695, #735); pairing bug #734 也仍未修"
       },
       "closure": "public",
       "formal": "audited",
@@ -797,15 +795,15 @@
         "zh": "托管实例快速上手 (< 10 分钟)"
       },
       "desc": {
-        "en": "End-to-end onboarding on hosted instance: register → add credentials → wrap as MCP → verify",
-        "zh": "托管实例端到端上手: 注册 → 添加凭证 → 包装为 MCP → 验证连通"
+        "en": "End-to-end onboarding on hosted instance: register → add credentials → wrap as MCP → verify. Sprint 5 Show HN gate (#558 — fresh-install verify ≥3/5 pass) closed 2026-05-18 after the W19 quickstart-polish bug cluster (#561, #562, #564–#567, #645–#648, #669) landed.",
+        "zh": "托管实例端到端上手: 注册 → 添加凭证 → 包装为 MCP → 验证连通。Sprint 5 Show HN 门 (#558 — fresh-install ≥3/5 通过) 已于 2026-05-18 关闭, 前置 W19 quickstart 修复群 (#561, #562, #564–#567, #645–#648, #669) 已上线"
       },
       "closure": "bridged",
       "formal": "sop",
       "product": "nyxid",
       "milestone": "M0",
       "owner": "kaiweijw",
-      "issue_count": 1,
+      "issue_count": 0,
       "focus": true,
       "archived": false,
       "promoted_at": {
@@ -819,17 +817,17 @@
     },
     "NyxID-Quickstart-Docker": {
       "label": {
-        "en": "Docker Quickstart (M1+)",
-        "zh": "Docker 快速启动 (M1+)"
+        "en": "Docker Quickstart (M1+, self-hosted)",
+        "zh": "Docker 快速启动 (M1+ 自托管)"
       },
       "desc": {
-        "en": "docker run + 3 env vars one-liner for self-hosted private deployment",
-        "zh": "docker run + 3 个环境变量一行命令启动私有部署 (M1+)"
+        "en": "docker run + 3 env vars one-liner for self-hosted private deployment. Distinct audience from the hosted-user-growth M1 goal — self-hosted users don't count toward Show HN WAU. Tracked separately as M1+ work.",
+        "zh": "docker run + 3 个环境变量一行命令启动私有部署。自托管用户与 M1 托管用户增长目标受众不同 — 自托管用户不计入 Show HN WAU。作为 M1+ 工作独立追踪"
       },
       "closure": "scoped",
       "formal": "sop",
       "product": "nyxid",
-      "milestone": "M1",
+      "milestone": "M1+",
       "owner": "kaiweijw",
       "issue_count": 0,
       "focus": false,
@@ -871,8 +869,8 @@
         "zh": "产品落地页"
       },
       "desc": {
-        "en": "Public landing page (separate repo ChronoAIProject/nyxid-landing)",
-        "zh": "公开落地页, 独立仓库 ChronoAIProject/nyxid-landing"
+        "en": "Public landing page (separate repo ChronoAIProject/nyxid-landing). Last push 2026-04-01 — currently dormant, no active attention.",
+        "zh": "公开落地页, 独立仓库 ChronoAIProject/nyxid-landing。最后一次提交 2026-04-01, 当前无活跃迭代"
       },
       "closure": "public",
       "formal": "none",
@@ -880,7 +878,7 @@
       "milestone": "M1",
       "owner": "ctkm-aelf",
       "issue_count": 0,
-      "focus": true,
+      "focus": false,
       "archived": false,
       "promoted_at": {
         "public": "2026-04-10"
@@ -917,12 +915,12 @@
     },
     "NyxID-M1-Milestone": {
       "label": {
-        "en": "NyxID M1 — 10 Weekly Active Users",
-        "zh": "NyxID M1 — 10 周活用户"
+        "en": "NyxID M1 — 10 Weekly Active Users (hosted)",
+        "zh": "NyxID M1 — 10 周活用户 (托管)"
       },
       "desc": {
-        "en": "Aggregator: 10 activated external WAU by 2026-05-08, unlocks Show HN. Tracked on board ChronoAIProject #3.",
-        "zh": "聚合节点: 2026-05-08 前 10 个外部周活用户, 解锁 Show HN。看板 ChronoAIProject #3"
+        "en": "Aggregator: 10 activated WAU on the hosted instance (nyx.chrono-ai.fun), unlocks Show HN. NyxID is MVP-ready — engineering is not the gate; marketing + distribution is. The actual gate is the Show HN launch (NyxID-Marketing-Show-HN) supported by prelaunch content + warmup (NyxID-Marketing-Prelaunch). Engineering polish (CLI-Wizard, UX-Redesign, Internal-Datasources) reduces churn but doesn't bring new users — those are parallel, not gating. Self-hosted Docker users tracked separately (M1+), do NOT count toward this gate. Tracked on board ChronoAIProject #3.",
+        "zh": "聚合节点: 托管实例 (nyx.chrono-ai.fun) 10 个周活用户解锁 Show HN。NyxID 已 MVP-ready — 工程不是瓶颈, 营销 + 分发才是。真实门槛是 Show HN 发布事件 (NyxID-Marketing-Show-HN) 由预启动内容 + 预热 (NyxID-Marketing-Prelaunch) 支撑。工程打磨 (CLI 向导, UX 重做, 内部数据源) 降低流失但不带来新用户 — 是并行而非 gating。自托管 Docker 用户独立追踪 (M1+), 不计入此门槛。看板 ChronoAIProject #3"
       },
       "closure": "obligation",
       "formal": "sop",
@@ -935,13 +933,100 @@
       "promoted_at": {},
       "deps": [
         "NyxID-M0-Milestone",
+        "NyxID-Marketing-Show-HN",
+        "NyxID-Marketing-Prelaunch",
         "NyxID-Quickstart-NPM",
-        "NyxID-Quickstart-Docker",
-        "NyxID-Landing-Page",
-        "NyxID-CLI-Wizard",
-        "NyxID-UX-Redesign",
-        "NyxID-Invite-Code-System"
+        "NyxID-Landing-Page"
       ]
+    },
+    "NyxID-Marketing-Prelaunch": {
+      "label": {
+        "en": "Marketing — Prelaunch warmup",
+        "zh": "营销 — 预启动预热"
+      },
+      "desc": {
+        "en": "Content + positioning that establishes presence before Show HN: README v2 (first-impression anchor), demo brainstorm finalized into demo script + video, lark-cli comparison material, competitive analysis, CDN for asset hosting. Foundation that makes Show HN viable.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Marketing — Prelaunch warmup](https://github.com/ChronoAIProject/NyxID/milestone/16) · 4 open / 0 closed\n\n_Open:_\n- [#766](https://github.com/ChronoAIProject/NyxID/issues/766) 竞品观察 · ArmorerLabs/Armorer code-level 对比分析\n- [#657](https://github.com/ChronoAIProject/NyxID/issues/657) README v2 redesign proposal — would love input from the dev side\n- [#619](https://github.com/ChronoAIProject/NyxID/issues/619) Reference · NyxID Cool Demo Brainstorm v3 (Marketing strategy doc)\n- [#183](https://github.com/ChronoAIProject/NyxID/issues/183) 市场素材：NyxID 相比 lark-cli 直连模式的核心价值\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "Show HN 之前建立存在感的内容与定位: README v2 (第一印象锚点), demo 头脑风暴产出脚本 + 视频, lark-cli 对比材料, 竞品分析, 资源 CDN。Show HN 可行性的基础\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Marketing — Prelaunch warmup](https://github.com/ChronoAIProject/NyxID/milestone/16) · 4 进行中 / 0 已关闭\n\n_进行中:_\n- [#766](https://github.com/ChronoAIProject/NyxID/issues/766) 竞品观察 · ArmorerLabs/Armorer code-level 对比分析\n- [#657](https://github.com/ChronoAIProject/NyxID/issues/657) README v2 redesign proposal — would love input from the dev side\n- [#619](https://github.com/ChronoAIProject/NyxID/issues/619) Reference · NyxID Cool Demo Brainstorm v3 (Marketing strategy doc)\n- [#183](https://github.com/ChronoAIProject/NyxID/issues/183) 市场素材：NyxID 相比 lark-cli 直连模式的核心价值\n\n<!-- AUTO_GH_ISSUES:END -->"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "nyxid",
+      "milestone": "M1",
+      "owner": "kaiweijw",
+      "issue_count": 4,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "obligation": "2026-05-18"
+      },
+      "deps": [
+        "NyxID-Landing-Page",
+        "NyxID-Hosted-Instance"
+      ],
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Marketing — Prelaunch warmup"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Marketing — Prelaunch warmup\""
+    },
+    "NyxID-Marketing-Show-HN": {
+      "label": {
+        "en": "Marketing — Show HN launch",
+        "zh": "营销 — Show HN 发布"
+      },
+      "desc": {
+        "en": "The Show HN event itself: submission copy (title + first comment, #791), demo video / GIF for HN front (#792), day-of triage plan + on-call rotation (#793), pre-launch outreach list to early supporters (#794). Direct user-growth gate. Output: a successful HN launch driving inbound that converts to 10 WAU.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Marketing — Show HN launch](https://github.com/ChronoAIProject/NyxID/milestone/17) · 4 open / 0 closed\n\n_Open:_\n- [#794](https://github.com/ChronoAIProject/NyxID/issues/794) [Show HN] Pre-launch outreach list — early supporters\n- [#793](https://github.com/ChronoAIProject/NyxID/issues/793) [Show HN] Day-of triage plan + on-call rotation\n- [#792](https://github.com/ChronoAIProject/NyxID/issues/792) [Show HN] Record demo video / GIF for HN front\n- [#791](https://github.com/ChronoAIProject/NyxID/issues/791) [Show HN] Write submission copy — title + first comment\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "Show HN 发布事件本身: 投稿文案 (标题 + 首评, #791), HN 头部 demo 视频 / GIF (#792), 当日响应 + on-call 轮值 (#793), 早期支持者预启动外联名单 (#794)。直接的用户增长门槛。产出: 成功的 HN 发布带来转化为 10 WAU 的入站流量\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Marketing — Show HN launch](https://github.com/ChronoAIProject/NyxID/milestone/17) · 4 进行中 / 0 已关闭\n\n_进行中:_\n- [#794](https://github.com/ChronoAIProject/NyxID/issues/794) [Show HN] Pre-launch outreach list — early supporters\n- [#793](https://github.com/ChronoAIProject/NyxID/issues/793) [Show HN] Day-of triage plan + on-call rotation\n- [#792](https://github.com/ChronoAIProject/NyxID/issues/792) [Show HN] Record demo video / GIF for HN front\n- [#791](https://github.com/ChronoAIProject/NyxID/issues/791) [Show HN] Write submission copy — title + first comment\n\n<!-- AUTO_GH_ISSUES:END -->"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "nyxid",
+      "milestone": "M1",
+      "owner": "kaiweijw",
+      "issue_count": 4,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "seed": "2026-05-18"
+      },
+      "deps": [
+        "NyxID-Marketing-Prelaunch",
+        "NyxID-Quickstart-NPM"
+      ],
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Marketing — Show HN launch"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Marketing — Show HN launch\""
+    },
+    "NyxID-Marketing-Postlaunch": {
+      "label": {
+        "en": "Marketing — Postlaunch capture",
+        "zh": "营销 — 发布后捕获"
+      },
+      "desc": {
+        "en": "Post-launch funnel: HN inbound → signup → first 2xx proxy (WAU activation). Funnel analytics dashboard (#795) measures drop-off so we can iterate. More issues will be filed reactively based on actual launch feedback.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Marketing — Postlaunch capture](https://github.com/ChronoAIProject/NyxID/milestone/18) · 1 open / 0 closed\n\n_Open:_\n- [#795](https://github.com/ChronoAIProject/NyxID/issues/795) [Postlaunch] Funnel analytics dashboard — HN inbound → signup → first 2xx proxy\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "发布后漏斗: HN 入站 → 注册 → 首次 2xx proxy (WAU 激活)。漏斗分析 dashboard (#795) 衡量流失以便迭代。更多 issue 会基于真实发布反馈反应性地建立\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Marketing — Postlaunch capture](https://github.com/ChronoAIProject/NyxID/milestone/18) · 1 进行中 / 0 已关闭\n\n_进行中:_\n- [#795](https://github.com/ChronoAIProject/NyxID/issues/795) [Postlaunch] Funnel analytics dashboard — HN inbound → signup → first 2xx proxy\n\n<!-- AUTO_GH_ISSUES:END -->"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "nyxid",
+      "milestone": "M1+",
+      "owner": "kaiweijw",
+      "issue_count": 1,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {
+        "seed": "2026-05-18"
+      },
+      "deps": [
+        "NyxID-Marketing-Show-HN"
+      ],
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Marketing — Postlaunch capture"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Marketing — Postlaunch capture\""
     },
     "NyxID-CLI-Wizard": {
       "label": {
@@ -949,8 +1034,8 @@
         "zh": "CLI 向导 (交互式 service add)"
       },
       "desc": {
-        "en": "nyxid service add interactive wizard covering OAuth / device-code / bearer / catalog flows. Heavy investment W18-W20 (10+ bugs closed, e.g. #429 #430 #441 #448 #449 #506 #565 #647 #648 #710). 5 open hardening bugs (#695 OAuth account-mismatch, #706 expired device-code, #710 WSL auto-open, #711 service-creation timeout, #713 cross-OS regression test).",
-        "zh": "nyxid service add 交互式向导, 覆盖 OAuth / device-code / bearer / catalog 流程。W18-W20 高频投入 (10+ bug 修复, 含 #429 #430 #441 #448 #449 #506 #565 #647 #648 #710)。5 个未修硬化 bug (#695 OAuth 账号错配 / #706 device-code 过期 / #710 WSL 自动打开 / #711 service 创建超时 / #713 跨 OS 回归测试)"
+        "en": "nyxid service add interactive wizard covering OAuth / device-code / bearer / catalog flows. Heavy investment W18-W20 (10+ bugs closed, e.g. #429 #430 #441 #448 #449 #506 #565 #647 #648 #710). 5 open hardening bugs (#695 OAuth account-mismatch, #706 expired device-code, #710 WSL auto-open, #711 service-creation timeout, #713 cross-OS regression test).\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [CLI Wizard hardening](https://github.com/ChronoAIProject/NyxID/milestone/9) · 5 open / 0 closed\n\n_Open:_\n- [#713](https://github.com/ChronoAIProject/NyxID/issues/713) [Test] CLI Wizard — Service Add / OAuth / Device Code / Windows WSL Regression\n- [#711](https://github.com/ChronoAIProject/NyxID/issues/711) [Bug] [CLI Wizard] Service creation timeout restores the form without showing an actionable error\n- [#706](https://github.com/ChronoAIProject/NyxID/issues/706) [Bug] [CLI Wizard Device Code] Expired device-code flow times out in CLI but leaves a `pending_auth` service\n- [#695](https://github.com/ChronoAIProject/NyxID/issues/695) [Bug] [CLI Wizard OAuth] Account-mismatch callback redirects to the browser account's AI Services page instead of showing the mismatch error immediately\n- [#694](https://github.com/ChronoAIProject/NyxID/issues/694) [Bug] [Lark OAuth] Same-account CLI Wizard authorization can fail with generic `An internal error occurred` after provider approval\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "nyxid service add 交互式向导, 覆盖 OAuth / device-code / bearer / catalog 流程。W18-W20 高频投入 (10+ bug 修复, 含 #429 #430 #441 #448 #449 #506 #565 #647 #648 #710)。5 个未修硬化 bug (#695 OAuth 账号错配 / #706 device-code 过期 / #710 WSL 自动打开 / #711 service 创建超时 / #713 跨 OS 回归测试)\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [CLI Wizard hardening](https://github.com/ChronoAIProject/NyxID/milestone/9) · 5 进行中 / 0 已关闭\n\n_进行中:_\n- [#713](https://github.com/ChronoAIProject/NyxID/issues/713) [Test] CLI Wizard — Service Add / OAuth / Device Code / Windows WSL Regression\n- [#711](https://github.com/ChronoAIProject/NyxID/issues/711) [Bug] [CLI Wizard] Service creation timeout restores the form without showing an actionable error\n- [#706](https://github.com/ChronoAIProject/NyxID/issues/706) [Bug] [CLI Wizard Device Code] Expired device-code flow times out in CLI but leaves a `pending_auth` service\n- [#695](https://github.com/ChronoAIProject/NyxID/issues/695) [Bug] [CLI Wizard OAuth] Account-mismatch callback redirects to the browser account's AI Services page instead of showing the mismatch error immediately\n- [#694](https://github.com/ChronoAIProject/NyxID/issues/694) [Bug] [Lark OAuth] Same-account CLI Wizard authorization can fail with generic `An internal error occurred` after provider approval\n\n<!-- AUTO_GH_ISSUES:END -->"
       },
       "closure": "public",
       "formal": "checked",
@@ -966,7 +1051,11 @@
       "deps": [
         "NyxID-OAuth-flow"
       ],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID \"CLI Wizard\" in:title"
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "CLI Wizard hardening"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"CLI Wizard hardening\""
     },
     "NyxID-UX-Redesign": {
       "label": {
@@ -974,15 +1063,15 @@
         "zh": "UX / 信息架构重做"
       },
       "desc": {
-        "en": "Information-architecture redesign of dashboard, key detail, and agent isolation flows. Open: #684 (first-time AI service flow), #685 (key detail page progressive IA), #686 (agent isolation guided flow). Closed W20: #687 dashboard nav exposing too much, #688 consistency + responsive standards.",
-        "zh": "Dashboard / Key 详情 / Agent 隔离流程的信息架构重做。未修: #684 (首次 AI service 流程), #685 (Key 详情页渐进式 IA), #686 (Agent 隔离引导流程)。W20 已修: #687 Dashboard 导航过载, #688 一致性 + 响应式标准"
+        "en": "Information-architecture redesign of dashboard, key detail, and agent isolation flows. Open: #684 (first-time AI service flow), #685 (key detail progressive IA), #686 (agent isolation guided flow), #772 (explain credential_type=node_managed inline). Closed W20: #687 dashboard nav, #688 consistency + responsive standards.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [UX Redesign](https://github.com/ChronoAIProject/NyxID/milestone/10) · 4 open / 0 closed\n\n_Open:_\n- [#772](https://github.com/ChronoAIProject/NyxID/issues/772) [UX] Explain credential_type=node_managed inline in service show / list\n- [#686](https://github.com/ChronoAIProject/NyxID/issues/686) [UX] Agent isolation setup lacks a guided flow from key creation to service binding and scope verification\n- [#685](https://github.com/ChronoAIProject/NyxID/issues/685) [UX] Key detail page is overloaded and needs progressive information architecture\n- [#684](https://github.com/ChronoAIProject/NyxID/issues/684) [UX] First-time AI service setup flow is fragmented and does not clearly lead users to first proxy success\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "Dashboard / Key 详情 / Agent 隔离流程的信息架构重做。未修: #684 (首次 AI service 流程), #685 (Key 详情渐进式 IA), #686 (Agent 隔离引导), #772 (在 service show/list 内联解释 credential_type=node_managed)。W20 已修: #687 Dashboard 导航, #688 一致性 + 响应式\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [UX Redesign](https://github.com/ChronoAIProject/NyxID/milestone/10) · 4 进行中 / 0 已关闭\n\n_进行中:_\n- [#772](https://github.com/ChronoAIProject/NyxID/issues/772) [UX] Explain credential_type=node_managed inline in service show / list\n- [#686](https://github.com/ChronoAIProject/NyxID/issues/686) [UX] Agent isolation setup lacks a guided flow from key creation to service binding and scope verification\n- [#685](https://github.com/ChronoAIProject/NyxID/issues/685) [UX] Key detail page is overloaded and needs progressive information architecture\n- [#684](https://github.com/ChronoAIProject/NyxID/issues/684) [UX] First-time AI service setup flow is fragmented and does not clearly lead users to first proxy success\n\n<!-- AUTO_GH_ISSUES:END -->"
       },
       "closure": "obligation",
       "formal": "none",
       "product": "nyxid",
       "milestone": "M1",
       "owner": "dannick-aelf",
-      "issue_count": 3,
+      "issue_count": 4,
       "focus": true,
       "archived": false,
       "promoted_at": {
@@ -991,7 +1080,11 @@
       "deps": [
         "NyxID-Hosted-Instance"
       ],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID \"UX\" in:title"
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "UX Redesign"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"UX Redesign\""
     },
     "NyxID-Channel-Phase4": {
       "label": {
@@ -999,8 +1092,8 @@
         "zh": "Channel Phase 4 (双向)"
       },
       "desc": {
-        "en": "Bidirectional device channels — DeviceAdapter + outbound transport (#411), and registering aevatar as a DownstreamService for Codex/Cursor inbound routing (#712). Extends NAT-Traversal beyond pure reverse-connect into full inbound/outbound bridging.",
-        "zh": "双向设备 channel — DeviceAdapter + outbound transport (#411), 以及把 aevatar 注册为 DownstreamService 给 Codex/Cursor 入站路由 (#712)。把 NAT 穿透从纯反连扩到全双向桥接"
+        "en": "Bidirectional device channels — DeviceAdapter + outbound transport (#411), and registering aevatar as a DownstreamService for Codex/Cursor inbound routing (#712). Extends NAT-Traversal beyond pure reverse-connect into full inbound/outbound bridging.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Channel Phase 4 (bidirectional)](https://github.com/ChronoAIProject/NyxID/milestone/13) · 2 open / 0 closed\n\n_Open:_\n- [#712](https://github.com/ChronoAIProject/NyxID/issues/712) Register aevatar as DownstreamService for Codex/Cursor/channel inbound routing\n- [#411](https://github.com/ChronoAIProject/NyxID/issues/411) feat(channel): Phase 4 — bidirectional device channels (DeviceAdapter + outbound transport)\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "双向设备 channel — DeviceAdapter + outbound transport (#411), 以及把 aevatar 注册为 DownstreamService 给 Codex/Cursor 入站路由 (#712)。把 NAT 穿透从纯反连扩到全双向桥接\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Channel Phase 4 (bidirectional)](https://github.com/ChronoAIProject/NyxID/milestone/13) · 2 进行中 / 0 已关闭\n\n_进行中:_\n- [#712](https://github.com/ChronoAIProject/NyxID/issues/712) Register aevatar as DownstreamService for Codex/Cursor/channel inbound routing\n- [#411](https://github.com/ChronoAIProject/NyxID/issues/411) feat(channel): Phase 4 — bidirectional device channels (DeviceAdapter + outbound transport)\n\n<!-- AUTO_GH_ISSUES:END -->"
       },
       "closure": "obligation",
       "formal": "none",
@@ -1016,7 +1109,11 @@
       "deps": [
         "NyxID-NAT-Traversal"
       ],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID channel in:title"
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Channel Phase 4 (bidirectional)"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Channel Phase 4 (bidirectional)\""
     },
     "NyxID-Device-Code-Grant": {
       "label": {
@@ -1024,8 +1121,8 @@
         "zh": "Device Code Grant (RFC 8628)"
       },
       "desc": {
-        "en": "OAuth 2.0 Device Authorization Grant for headless / IoT / 1-tap device onboarding. Parent epic #736 + 11 sub-issues (#737 DB schema, #738-#740 endpoints, #741 web bind page, #742 CLI command, #743 rate limit, #744 notifications, #745 docs, #746 factory provisioning tool, #747 web QR provisioning). All seeded 2026-05-13 under label `device-code-grant`.",
-        "zh": "OAuth 2.0 Device Authorization Grant, 用于 headless / IoT / 1-tap 设备 onboarding。父 epic #736 + 11 个子 issue (#737 DB schema, #738-#740 endpoints, #741 web bind 页, #742 CLI 命令, #743 限流, #744 通知, #745 文档, #746 出厂烧录工具, #747 web QR provisioning)。2026-05-13 全量建立, 标签 `device-code-grant`"
+        "en": "OAuth 2.0 Device Authorization Grant for headless / IoT / 1-tap device onboarding. Parent epic #736 + 11 sub-issues (#737 DB schema, #738-#740 endpoints, #741 web bind page, #742 CLI command, #743 rate limit, #744 notifications, #745 docs, #746 factory provisioning tool, #747 web QR provisioning). All seeded 2026-05-13 under label `device-code-grant`.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Device Code Grant (RFC 8628)](https://github.com/ChronoAIProject/NyxID/milestone/8) · 12 open / 0 closed\n\n_Open:_\n- [#747](https://github.com/ChronoAIProject/NyxID/issues/747) [Feature] Web QR provisioning page for headless device onboarding (1-tap)\n- [#746](https://github.com/ChronoAIProject/NyxID/issues/746) [Feature] Device Code: factory Ed25519 provisioning tool\n- [#745](https://github.com/ChronoAIProject/NyxID/issues/745) [Feature] Device Code: docs/device-code-binding.md\n- [#744](https://github.com/ChronoAIProject/NyxID/issues/744) [Feature] Device Code: notification templates\n- [#743](https://github.com/ChronoAIProject/NyxID/issues/743) [Feature] Device Code: rate limit middleware\n- [#742](https://github.com/ChronoAIProject/NyxID/issues/742) [Feature] Device Code: nyxid device approve CLI command\n- [#741](https://github.com/ChronoAIProject/NyxID/issues/741) [Feature] Device Code: web bind page\n- [#740](https://github.com/ChronoAIProject/NyxID/issues/740) [Feature] Device Code: /devices/code/approve endpoint\n- [#739](https://github.com/ChronoAIProject/NyxID/issues/739) [Feature] Device Code: /devices/code/poll endpoint\n- [#738](https://github.com/ChronoAIProject/NyxID/issues/738) [Feature] Device Code: /devices/code/request endpoint\n- [#737](https://github.com/ChronoAIProject/NyxID/issues/737) [Feature] Device Code: device_codes DB schema\n- [#736](https://github.com/ChronoAIProject/NyxID/issues/736) [Feature] Device Code grant for headless device provisioning (RFC 8628)\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "OAuth 2.0 Device Authorization Grant, 用于 headless / IoT / 1-tap 设备 onboarding。父 epic #736 + 11 个子 issue (#737 DB schema, #738-#740 endpoints, #741 web bind 页, #742 CLI 命令, #743 限流, #744 通知, #745 文档, #746 出厂烧录工具, #747 web QR provisioning)。2026-05-13 全量建立, 标签 `device-code-grant`\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Device Code Grant (RFC 8628)](https://github.com/ChronoAIProject/NyxID/milestone/8) · 12 进行中 / 0 已关闭\n\n_进行中:_\n- [#747](https://github.com/ChronoAIProject/NyxID/issues/747) [Feature] Web QR provisioning page for headless device onboarding (1-tap)\n- [#746](https://github.com/ChronoAIProject/NyxID/issues/746) [Feature] Device Code: factory Ed25519 provisioning tool\n- [#745](https://github.com/ChronoAIProject/NyxID/issues/745) [Feature] Device Code: docs/device-code-binding.md\n- [#744](https://github.com/ChronoAIProject/NyxID/issues/744) [Feature] Device Code: notification templates\n- [#743](https://github.com/ChronoAIProject/NyxID/issues/743) [Feature] Device Code: rate limit middleware\n- [#742](https://github.com/ChronoAIProject/NyxID/issues/742) [Feature] Device Code: nyxid device approve CLI command\n- [#741](https://github.com/ChronoAIProject/NyxID/issues/741) [Feature] Device Code: web bind page\n- [#740](https://github.com/ChronoAIProject/NyxID/issues/740) [Feature] Device Code: /devices/code/approve endpoint\n- [#739](https://github.com/ChronoAIProject/NyxID/issues/739) [Feature] Device Code: /devices/code/poll endpoint\n- [#738](https://github.com/ChronoAIProject/NyxID/issues/738) [Feature] Device Code: /devices/code/request endpoint\n- [#737](https://github.com/ChronoAIProject/NyxID/issues/737) [Feature] Device Code: device_codes DB schema\n- [#736](https://github.com/ChronoAIProject/NyxID/issues/736) [Feature] Device Code grant for headless device provisioning (RFC 8628)\n\n<!-- AUTO_GH_ISSUES:END -->"
       },
       "closure": "seed",
       "formal": "none",
@@ -1041,7 +1138,11 @@
       "deps": [
         "NyxID-OAuth-flow"
       ],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID label:device-code-grant Device in:title"
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Device Code Grant (RFC 8628)"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Device Code Grant (RFC 8628)\""
     },
     "NyxID-Skill-Install-CLI": {
       "label": {
@@ -1049,8 +1150,8 @@
         "zh": "通过 NyxID CLI 安装 Skill"
       },
       "desc": {
-        "en": "nyxid skill install — local install path for limited-access Ornn skills via NyxID CLI (#613, assigned chronoai-shining). Cross-product NyxID × Ornn surface: NyxID handles credentials/proxy, Ornn provides the skill artifact.",
-        "zh": "nyxid skill install — 通过 NyxID CLI 本地安装受限访问的 Ornn skill (#613, chronoai-shining 接手)。NyxID × Ornn 跨产品面: NyxID 管凭证 / proxy, Ornn 出 skill artifact"
+        "en": "nyxid skill install — local install path for limited-access Ornn skills via NyxID CLI (#613, assigned chronoai-shining). Cross-product NyxID × Ornn surface: NyxID handles credentials/proxy, Ornn provides the skill artifact.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Skill Install via NyxID CLI](https://github.com/ChronoAIProject/NyxID/milestone/15) · 1 open / 0 closed\n\n_Open:_\n- [#613](https://github.com/ChronoAIProject/NyxID/issues/613) [Feature] nyxid skill install — local install for limited-access Ornn skills via NyxID CLI\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "nyxid skill install — 通过 NyxID CLI 本地安装受限访问的 Ornn skill (#613, chronoai-shining 接手)。NyxID × Ornn 跨产品面: NyxID 管凭证 / proxy, Ornn 出 skill artifact\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Skill Install via NyxID CLI](https://github.com/ChronoAIProject/NyxID/milestone/15) · 1 进行中 / 0 已关闭\n\n_进行中:_\n- [#613](https://github.com/ChronoAIProject/NyxID/issues/613) [Feature] nyxid skill install — local install for limited-access Ornn skills via NyxID CLI\n\n<!-- AUTO_GH_ISSUES:END -->"
       },
       "closure": "obligation",
       "formal": "none",
@@ -1067,7 +1168,102 @@
         "NyxID-MCP-Wrap",
         "Ornn-M1-Skill-Lifecycle-Core"
       ],
-      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID skill install in:title"
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Skill Install via NyxID CLI"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Skill Install via NyxID CLI\""
+    },
+    "NyxID-Internal-Datasources": {
+      "label": {
+        "en": "Internal Datasources (admin service catalog)",
+        "zh": "内部数据源 (admin service 目录)"
+      },
+      "desc": {
+        "en": "Make company-internal data queryable via NyxID admin services. Without this, CEO PARK/KILL calls for products like GodGPT have no real cost baseline. Parent #352 covers all sources; sub-epic #716 split out the cost-visibility track.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Internal Datasources](https://github.com/ChronoAIProject/NyxID/milestone/12) · 5 open / 0 closed\n\n_Open:_\n- [#780](https://github.com/ChronoAIProject/NyxID/issues/780) feat(catalog): integrate chronoai-platform k8s metrics (Prometheus / k8s API)\n- [#779](https://github.com/ChronoAIProject/NyxID/issues/779) feat(catalog): integrate Chrono LLM Gateway admin API (llm.aelf.dev)\n- [#778](https://github.com/ChronoAIProject/NyxID/issues/778) feat(catalog): replace gcp_service_account with OAuth user-account flow\n- [#716](https://github.com/ChronoAIProject/NyxID/issues/716) feat(catalog): 接入云账单 / Chrono LLM / k8s metrics — 基础设施成本可见性\n- [#352](https://github.com/ChronoAIProject/NyxID/issues/352) feat: 接入公司全部数据源到 NyxID scope — 全员可通过 NyxID 访问公司数据\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "让公司内部数据可通过 NyxID admin service 查询。否则 CEO 对 GodGPT 等产品的 PARK/KILL 决策没有真实成本基线。父 issue #352 覆盖全部数据源; 子 epic #716 拆出成本可见性子线\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Internal Datasources](https://github.com/ChronoAIProject/NyxID/milestone/12) · 5 进行中 / 0 已关闭\n\n_进行中:_\n- [#780](https://github.com/ChronoAIProject/NyxID/issues/780) feat(catalog): integrate chronoai-platform k8s metrics (Prometheus / k8s API)\n- [#779](https://github.com/ChronoAIProject/NyxID/issues/779) feat(catalog): integrate Chrono LLM Gateway admin API (llm.aelf.dev)\n- [#778](https://github.com/ChronoAIProject/NyxID/issues/778) feat(catalog): replace gcp_service_account with OAuth user-account flow\n- [#716](https://github.com/ChronoAIProject/NyxID/issues/716) feat(catalog): 接入云账单 / Chrono LLM / k8s metrics — 基础设施成本可见性\n- [#352](https://github.com/ChronoAIProject/NyxID/issues/352) feat: 接入公司全部数据源到 NyxID scope — 全员可通过 NyxID 访问公司数据\n\n<!-- AUTO_GH_ISSUES:END -->"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "nyxid",
+      "milestone": "M1+",
+      "owner": "kaiweijw",
+      "issue_count": 5,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "obligation": "2026-04-15"
+      },
+      "deps": [
+        "NyxID-Hosted-Instance",
+        "NyxID-Credential-Injection"
+      ],
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Internal Datasources"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Internal Datasources\""
+    },
+    "NyxID-Anonymous-Endpoints": {
+      "label": {
+        "en": "Anonymous Endpoints (admin services)",
+        "zh": "匿名端点 (admin service)"
+      },
+      "desc": {
+        "en": "Opt-in anonymous endpoint mechanism for admin services — per-(method, path) public access with daily quota. Motivating case: ornn-api skill-catalog browse endpoints need public consumption but are forced behind NyxID identity because ornn-api is a NyxID admin service. Scope (v1): admin REST API + admin UI on service detail page, MCP public transport (POST /public/mcp), CLI subcommand group. Design reviewed 2026-05-04 (#610, assigned chronoai-shining).\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Anonymous Endpoints (admin services)](https://github.com/ChronoAIProject/NyxID/milestone/14) · 1 open / 0 closed\n\n_Open:_\n- [#610](https://github.com/ChronoAIProject/NyxID/issues/610) feat: Anonymous endpoints for admin services\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "为 admin service 开 opt-in 匿名端点 — 按 (method, path) 粒度对外开放, 带日配额。动机: ornn-api 的 skill-catalog browse 端点本来是公开消费, 但因为 ornn-api 是 NyxID admin service, 被迫每次都走 NyxID 身份。v1 范围: admin REST API + 服务详情页 admin UI, MCP 公开传输 (POST /public/mcp), CLI 子命令组。设计已 review 2026-05-04 (#610, chronoai-shining 接手)\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Anonymous Endpoints (admin services)](https://github.com/ChronoAIProject/NyxID/milestone/14) · 1 进行中 / 0 已关闭\n\n_进行中:_\n- [#610](https://github.com/ChronoAIProject/NyxID/issues/610) feat: Anonymous endpoints for admin services\n\n<!-- AUTO_GH_ISSUES:END -->"
+      },
+      "closure": "scoped",
+      "formal": "none",
+      "product": "nyxid",
+      "milestone": "M2",
+      "owner": "chronoai-shining",
+      "issue_count": 1,
+      "focus": false,
+      "archived": false,
+      "promoted_at": {
+        "scoped": "2026-05-04"
+      },
+      "deps": [
+        "NyxID-Reverse-Proxy",
+        "NyxID-Internal-Datasources"
+      ],
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Anonymous Endpoints (admin services)"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Anonymous Endpoints (admin services)\""
+    },
+    "NyxID-Org-Managed-Nodes": {
+      "label": {
+        "en": "Org-Managed Nodes (push credentials)",
+        "zh": "组织托管 Node (凭证推送)"
+      },
+      "desc": {
+        "en": "Org admins operating shared NyxID nodes at scale: shared-node onboarding friction tracking (#769), node-credential push with internal target_url for node-side reachability (#770), surface stale-node binding on node_offline (#771), inline node_managed credential type explanation (#772), remote credential injection path so admins don't need SSH-to-node (#773), node show exposing source IP / last-seen for admin debug (#774), CLI surface split docs (#775). 7 issues seeded 2026-05-15 by loning.\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Org-Managed Nodes](https://github.com/ChronoAIProject/NyxID/milestone/11) · 6 open / 0 closed\n\n_Open:_\n- [#775](https://github.com/ChronoAIProject/NyxID/issues/775) [Doc] CLI surface split: `nyxid node credentials` exists on addon-side runtime, not user-side CLI\n- [#774](https://github.com/ChronoAIProject/NyxID/issues/774) [Feature] node show should expose connection source IP / last-seen-from for admin debugging\n- [#773](https://github.com/ChronoAIProject/NyxID/issues/773) [Feature] Remote credential injection path for org admins (no SSH-to-node required)\n- [#771](https://github.com/ChronoAIProject/NyxID/issues/771) [Feature] Surface stale-node binding when proxy returns node_offline\n- [#770](https://github.com/ChronoAIProject/NyxID/issues/770) [Feature] node-credential push: allow internal target_url for node-side reachability\n- [#769](https://github.com/ChronoAIProject/NyxID/issues/769) [Feature] Org-admin onboarding for shared-node services — friction tracking\n\n<!-- AUTO_GH_ISSUES:END -->",
+        "zh": "组织管理员在 org 规模下运营共享 NyxID node: 共享 node 上手摩擦追踪 (#769), node-credential push 支持 internal target_url 节点侧可达 (#770), node_offline 时显式 stale-node 绑定提示 (#771), 在 service show/list 内联解释 node_managed (#772), 远程 credential injection 让 admin 不需 SSH 到 node (#773), node show 暴露源 IP / 最后连接时间 (#774), CLI surface 拆分文档 (#775)。2026-05-15 由 loning 开 7 个 issue\n\n<!-- AUTO_GH_ISSUES:START -->\n**GitHub issues** — [Org-Managed Nodes](https://github.com/ChronoAIProject/NyxID/milestone/11) · 6 进行中 / 0 已关闭\n\n_进行中:_\n- [#775](https://github.com/ChronoAIProject/NyxID/issues/775) [Doc] CLI surface split: `nyxid node credentials` exists on addon-side runtime, not user-side CLI\n- [#774](https://github.com/ChronoAIProject/NyxID/issues/774) [Feature] node show should expose connection source IP / last-seen-from for admin debugging\n- [#773](https://github.com/ChronoAIProject/NyxID/issues/773) [Feature] Remote credential injection path for org admins (no SSH-to-node required)\n- [#771](https://github.com/ChronoAIProject/NyxID/issues/771) [Feature] Surface stale-node binding when proxy returns node_offline\n- [#770](https://github.com/ChronoAIProject/NyxID/issues/770) [Feature] node-credential push: allow internal target_url for node-side reachability\n- [#769](https://github.com/ChronoAIProject/NyxID/issues/769) [Feature] Org-admin onboarding for shared-node services — friction tracking\n\n<!-- AUTO_GH_ISSUES:END -->"
+      },
+      "closure": "seed",
+      "formal": "none",
+      "product": "nyxid",
+      "milestone": "M1+",
+      "owner": "kaiweijw",
+      "issue_count": 6,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "seed": "2026-05-15"
+      },
+      "deps": [
+        "NyxID-NAT-Traversal",
+        "NyxID-Invite-Code-System",
+        "NyxID-Credential-Injection"
+      ],
+      "milestone_ref": {
+        "repo": "ChronoAIProject/NyxID",
+        "milestone": "Org-Managed Nodes"
+      },
+      "gh_query": "is:issue is:open repo:ChronoAIProject/NyxID milestone:\"Org-Managed Nodes\""
     },
     "NyxID-M2-Milestone": {
       "label": {
@@ -1075,8 +1271,8 @@
         "zh": "NyxID M2 — Headless + 双向 + 跨产品"
       },
       "desc": {
-        "en": "Aggregator: M2 expansion beyond first-WAU. Adds device-code grant for headless/IoT, bidirectional channels for Codex/Cursor inbound, and cross-product skill install. Tracked on board ChronoAIProject #3.",
-        "zh": "聚合节点: M2 在首批 WAU 之上扩展。新增 device-code (headless/IoT) / 双向 channel (Codex/Cursor 入站) / 跨产品 skill 安装。看板 ChronoAIProject #3"
+        "en": "Aggregator: M2 expansion beyond first-WAU. Adds device-code grant for headless/IoT, bidirectional channels for Codex/Cursor inbound, and cross-product skill install. (Org-Managed-Nodes is M1-parallel in-flight, not gated by M2.) Tracked on board ChronoAIProject #3.",
+        "zh": "聚合节点: M2 在首批 WAU 之上扩展。新增 device-code (headless/IoT) / 双向 channel (Codex/Cursor 入站) / 跨产品 skill 安装。(Org-Managed-Nodes 是 M1 并行 in-flight, 不归 M2 门。) 看板 ChronoAIProject #3"
       },
       "closure": "seed",
       "formal": "none",
@@ -1091,7 +1287,8 @@
         "NyxID-M1-Milestone",
         "NyxID-Device-Code-Grant",
         "NyxID-Channel-Phase4",
-        "NyxID-Skill-Install-CLI"
+        "NyxID-Skill-Install-CLI",
+        "NyxID-Anonymous-Endpoints"
       ]
     },
     "Sisyphus-V3-Branch": {
