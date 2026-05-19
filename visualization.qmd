@@ -162,6 +162,11 @@ format:
   #detail .term-blocked a { color: #c0392b; text-decoration: underline; }
   #detail .term-builton { color: #27ae60; opacity: 0.85; }
   #detail .term-builton strong { color: #27ae60; }
+  #detail .term-blocking { color: #c0392b; }
+  #detail .term-blocking strong { color: #c0392b; }
+  #detail .term-blocking a { color: #c0392b; text-decoration: underline; }
+  #detail .term-shipped-on-top { color: #7f8c8d; opacity: 0.75; }
+  #detail .term-shipped-on-top strong { color: #7f8c8d; }
   #detail .region-ref { color: #2c3e50; text-decoration: underline dotted; cursor: pointer; }
   #detail .region-ref:hover { color: #c0392b; }
   #detail .term-namecerts {
@@ -1151,12 +1156,36 @@ function showNodeDetail(id) {
     .filter(k => REGIONS_DOC.regions[k]);
 
   // Split upstream into BLOCKED-BY (not yet shipped) vs BUILT-ON (ready).
-  // Closure rank: shipped means >= public (release) for downstream consumption.
+  // Symmetric split for downstream: IS-BLOCKING (downstream not yet shipped — they
+  // need this region done) vs ALREADY-SHIPPED-ON-TOP (downstream past public —
+  // this region's state no longer gates them).
+  //
+  // "Shipped" is the OR of two signals:
+  //   1) closure stage >= public (manual judgment — primary source of truth)
+  //   2) region has a milestone_ref AND every tracked issue is CLOSED
+  //      (pragmatic auto-detection — closure is manually maintained and can lag
+  //      actual work completion; without this, a region that finished its work
+  //      stays falsely "blocking" in the panel until someone bumps the closure)
   const CLOSURE_RANK = {seed:0, obligation:1, scoped:2, public:3, bridged:4, mature:5};
   const SHIPPED_THRESHOLD = CLOSURE_RANK.public;
-  const isShipped = (k) => (CLOSURE_RANK[REGIONS_DOC.regions[k]?.closure] ?? 0) >= SHIPPED_THRESHOLD;
+  const isShipped = (k) => {
+    const rr = REGIONS_DOC.regions[k];
+    if (!rr) return false;
+    if ((CLOSURE_RANK[rr.closure] ?? 0) >= SHIPPED_THRESHOLD) return true;
+    // Auto-detect: milestone tracked + had real work + all closed
+    if (rr.milestone_ref) {
+      const issuesData = ORNN_ISSUES && ORNN_ISSUES.regions && ORNN_ISSUES.regions[k];
+      if (issuesData && issuesData.issues) {
+        const all = Object.values(issuesData.issues);
+        if (all.length > 0 && all.every(i => i.state !== "OPEN")) return true;
+      }
+    }
+    return false;
+  };
   const blockedBy = upstream.filter(k => !isShipped(k));
   const builtOn  = upstream.filter(k =>  isShipped(k));
+  const isBlocking      = downstream.filter(k => !isShipped(k));
+  const shippedOnTopOf  = downstream.filter(k =>  isShipped(k));
 
   const otherLang = lang === "en" ? "zh" : "en";
   const primaryLabel = (r.label && r.label[lang]) || (r.label && r.label.en) || id;
@@ -1286,7 +1315,8 @@ function showNodeDetail(id) {
     ${timeline ? `<div class="term-timeline"><strong>${t("detail_timeline")}</strong> ${escapeHtml(timeline)}</div>` : ""}
     ${blockedBy.length ? `<div class="term-deps term-blocked"><strong>${lang === "zh" ? "⛔ 被阻塞于:" : "⛔ Blocked by:"}</strong> ${blockedBy.map(linkRegion).join(" ")}</div>` : ""}
     ${builtOn.length ? `<div class="term-deps term-builton"><strong>${lang === "zh" ? "✅ 基于:" : "✅ Built on:"}</strong> ${builtOn.map(linkRegion).join(" ")}</div>` : ""}
-    ${downstream.length ? `<div class="term-deps"><strong>${t("detail_downstream")}</strong> ${downstream.map(linkRegion).join(" ")}</div>` : ""}
+    ${isBlocking.length ? `<div class="term-deps term-blocking"><strong>${lang === "zh" ? "🚀 正在阻塞:" : "🚀 Is blocking:"}</strong> ${isBlocking.map(linkRegion).join(" ")}</div>` : ""}
+    ${shippedOnTopOf.length ? `<div class="term-deps term-shipped-on-top"><strong>${lang === "zh" ? "↓ 上层已上线:" : "↓ Already shipped on top:"}</strong> ${shippedOnTopOf.map(linkRegion).join(" ")}</div>` : ""}
     ${issuesSection}
   `;
 }
