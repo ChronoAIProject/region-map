@@ -125,7 +125,23 @@ format:
   #detail .status-chip.status-blocked { background: #fdecec; color: #c0392b; }
   #detail .status-chip.status-done { background: #eef2f5; color: #6b7c8c; }
   #detail .term-deps { margin-top: 0.7rem; font-size: 0.86rem; color: #555; }
-  #detail .term-deps a { color: #2c3e50; cursor: pointer; text-decoration: underline dotted; margin-right: 0.4rem; }
+  #detail .term-deps strong { display: block; margin-bottom: 0.2rem; }
+  #detail .term-deps a {
+    display: block;
+    padding: 0.15rem 0 0.15rem 1.2rem;
+    color: #2c3e50;
+    cursor: pointer;
+    text-decoration: underline dotted;
+    position: relative;
+    line-height: 1.35;
+  }
+  #detail .term-deps a::before {
+    content: "·";
+    position: absolute;
+    left: 0.45rem;
+    color: #bbb;
+    font-weight: 600;
+  }
   #detail .term-deps a:hover { color: #c0392b; }
 
   #detail .term-issues { margin-top: 0.8rem; font-size: 0.82rem; color: #555; }
@@ -850,13 +866,10 @@ function renderCy() {
   CY.on("tap", evt => {
     if (evt.target === CY) {
       renderDefaultPanel();
-      CY.elements().removeClass("highlight").removeClass("faded");
       CY.nodes().unselect();
-      // Restore the global fit when the user taps an empty area.
-      CY.animate(
-        { fit: { eles: CY.elements(":visible"), padding: 16 } },
-        { duration: 350, easing: "ease-out" }
-      );
+      // Restore focus filter (not full visibility) — empty-tap returns to the
+      // "what we're attacking now" view, matching the side panel.
+      applyFocusFilter();
     }
   });
   // Global view: fit all nodes in the viewport. With the bigger font and
@@ -965,6 +978,46 @@ function setupZoomControls() {
     const eles = visible.length ? visible : CY.elements();
     CY.animate({ fit: { eles, padding: 16 } }, { duration: 300, easing: "ease-out" });
   });
+}
+
+// Initial-load filter: keep only focus=true regions and the edges between them.
+// Cuts the map's 82-region density down to just the "currently attacking"
+// subgraph (matching the side panel). Re-runs dagre on the visible subset so
+// nodes don't sit scattered across the original full-graph layout coordinates.
+// Restored on empty-area tap so the view doesn't get permanently "unfocused"
+// after exploring.
+function applyFocusFilter() {
+  if (!CY || !REGIONS_DOC) return;
+  CY.elements().removeClass("highlight").removeClass("faded");
+
+  const keep = new Set();
+  for (const [rid, r] of Object.entries(REGIONS_DOC.regions)) {
+    if (r.focus === true) keep.add(rid);
+  }
+  // Safety: if no focus defined, don't fade anything
+  if (keep.size === 0) return;
+
+  CY.nodes().forEach(n => { if (!keep.has(n.id())) n.addClass("faded"); });
+  CY.edges().forEach(e => {
+    if (!keep.has(e.data("source")) || !keep.has(e.data("target"))) {
+      e.addClass("faded");
+    }
+  });
+  // Re-layout visible subset with dagre so the focus subgraph is tightly
+  // arranged (instead of scattered across the original 82-region coordinates).
+  const visible = CY.elements().not(".faded");
+  if (visible.length > 0) {
+    visible.layout({
+      name: "dagre",
+      rankDir: "LR",
+      nodeSep: 30,
+      rankSep: 80,
+      animate: true,
+      animationDuration: 350,
+      fit: true,
+      padding: 30,
+    }).run();
+  }
 }
 
 function highlightSubgraph(id) {
@@ -1356,6 +1409,10 @@ function renderAll() {
     showNodeDetail(CY.nodes(":selected")[0].id());
   } else {
     renderDefaultPanel();
+    // On initial load (and when language toggles), apply the focus filter so
+    // the graph echoes the side panel — only "currently attacking" subgraph
+    // stays prominent; the rest fades.
+    applyFocusFilter();
   }
 }
 
