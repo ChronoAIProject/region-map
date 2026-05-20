@@ -125,7 +125,23 @@ format:
   #detail .status-chip.status-blocked { background: #fdecec; color: #c0392b; }
   #detail .status-chip.status-done { background: #eef2f5; color: #6b7c8c; }
   #detail .term-deps { margin-top: 0.7rem; font-size: 0.86rem; color: #555; }
-  #detail .term-deps a { color: #2c3e50; cursor: pointer; text-decoration: underline dotted; margin-right: 0.4rem; }
+  #detail .term-deps strong { display: block; margin-bottom: 0.2rem; }
+  #detail .term-deps a {
+    display: block;
+    padding: 0.15rem 0 0.15rem 1.2rem;
+    color: #2c3e50;
+    cursor: pointer;
+    text-decoration: underline dotted;
+    position: relative;
+    line-height: 1.35;
+  }
+  #detail .term-deps a::before {
+    content: "·";
+    position: absolute;
+    left: 0.45rem;
+    color: #bbb;
+    font-weight: 600;
+  }
   #detail .term-deps a:hover { color: #c0392b; }
 
   #detail .term-issues { margin-top: 0.8rem; font-size: 0.82rem; color: #555; }
