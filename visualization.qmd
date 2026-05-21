@@ -1213,19 +1213,28 @@ function showNodeDetail(id) {
   // need this region done) vs ALREADY-SHIPPED-ON-TOP (downstream past public —
   // this region's state no longer gates them).
   //
-  // "Shipped" is the OR of two signals:
-  //   1) closure stage >= public (manual judgment — primary source of truth)
-  //   2) region has a milestone_ref AND every tracked issue is CLOSED
-  //      (pragmatic auto-detection — closure is manually maintained and can lag
-  //      actual work completion; without this, a region that finished its work
-  //      stays falsely "blocking" in the panel until someone bumps the closure)
+  // "Shipped" — for the purpose of deciding whether this upstream still
+  // blocks its downstream. Per the README's closure semantics:
+  //   - public  = release / changelog announced (released to the world)
+  //   - bridged = upstream/downstream issues closed + smoke passed (integration verified)
+  //
+  // bridged is the level where downstream can RELY on this region. A
+  // public region with open bugs is announced but its integration smoke
+  // hasn't passed — so it still blocks downstream from a clean integration.
+  //
+  // Logic:
+  //   1) closure >= bridged → shipped (integration verified)
+  //   2) closure == public AND zero open issues → shipped (released cleanly)
+  //   3) milestone_ref + every tracked issue closed → shipped (pragmatic
+  //      auto-detect for when closure stage hasn't been manually bumped)
+  // Everything else: still blocking.
   const CLOSURE_RANK = {seed:0, obligation:1, scoped:2, public:3, bridged:4, mature:5};
-  const SHIPPED_THRESHOLD = CLOSURE_RANK.public;
   const isShipped = (k) => {
     const rr = REGIONS_DOC.regions[k];
     if (!rr) return false;
-    if ((CLOSURE_RANK[rr.closure] ?? 0) >= SHIPPED_THRESHOLD) return true;
-    // Auto-detect: milestone tracked + had real work + all closed
+    const rank = CLOSURE_RANK[rr.closure] ?? 0;
+    if (rank >= CLOSURE_RANK.bridged) return true;
+    if (rank >= CLOSURE_RANK.public && (rr.issue_count || 0) === 0) return true;
     if (rr.milestone_ref) {
       const issuesData = ORNN_ISSUES && ORNN_ISSUES.regions && ORNN_ISSUES.regions[k];
       if (issuesData && issuesData.issues) {
