@@ -30,6 +30,8 @@
         "Aevatar-NyxID-Integration",
         "Aevatar-Channel-Multi-Adapter",
         "Aevatar-Studio-Team-First",
+        "Aevatar-Team-Activity-Contract",
+        "Aevatar-Settings-Backend-Contract",
         "Aevatar-EventSourcing-Hardening"
       ],
       "gh_query": "is:issue is:open repo:aevatarAI/aevatar A0 in:title"
@@ -2084,20 +2086,21 @@
         "zh": "Console Web 成员态流程"
       },
       "desc": {
-        "en": "Frontend counterpart to Studio Team-First: Studio member identity cleanup, member-scoped Bind / Invoke / Observe, and chat-like current run console. Tracks open #654 and #655.",
-        "zh": "Studio Team-First 的前端对应: Studio 成员身份清理、Bind / Invoke / Observe 严格成员域化、chat-like 当前运行控制台。跟踪未关闭的 #654 / #655。"
+        "en": "Frontend counterpart to Studio Team-First: Studio member identity cleanup, member-scoped Bind / Invoke / Observe, and chat-like current run console. Core issues #652-#655 closed on 2026-05-18; follow-on frontend/backend contract work continues in Settings Backend Contract.",
+        "zh": "Studio Team-First 的前端对应: Studio 成员身份清理、Bind / Invoke / Observe 严格成员域化、chat-like 当前运行控制台。核心 issue #652-#655 已于 2026-05-18 closed；后续前后端合约工作转入 Settings Backend Contract。"
       },
-      "closure": "obligation",
+      "closure": "bridged",
       "formal": "none",
       "product": "aevatar",
       "milestone": "A0",
       "owner": "potter-sun",
-      "issue_count": 2,
-      "focus": true,
+      "issue_count": 0,
+      "focus": false,
       "archived": false,
       "promoted_at": {
         "seed": "2026-05-14",
-        "obligation": "2026-05-14"
+        "obligation": "2026-05-14",
+        "bridged": "2026-05-18"
       },
       "deps": [
         "Aevatar-Workflow-YAML",
@@ -2105,6 +2108,62 @@
         "Aevatar-Studio-Team-First"
       ],
       "gh_query": "is:issue is:open repo:aevatarAI/aevatar console-web Invoke in:title"
+    },
+    "Aevatar-Settings-Backend-Contract": {
+      "label": {
+        "en": "Settings Backend Contract",
+        "zh": "Settings 后端合约闭环"
+      },
+      "desc": {
+        "en": "Potter-owned Settings backend-alignment loop: backend owns LLM route/model/fallback metadata, Settings / Chat / Studio consume one canonical contract, Account uses backend current session, and runtime defaults move out of frontend-local truth. Tracker #1020 covers #787, #1019, #1018, #1017, and #780.",
+        "zh": "Potter 负责的 Settings 后端对齐闭环：LLM route / model / fallback 元数据由后端持有，Settings / Chat / Studio 共用统一合约，Account 使用后端 current session，runtime defaults 不再由前端本地独立维护。Tracker #1020 覆盖 #787 / #1019 / #1018 / #1017 / #780。"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "potter-sun",
+      "issue_count": 6,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "seed": "2026-05-25",
+        "obligation": "2026-05-25"
+      },
+      "deps": [
+        "Aevatar-Console-Web-Member-Flows",
+        "Aevatar-Studio-Team-First",
+        "Aevatar-NyxID-Integration"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar (Settings OR Gateway OR \"LLM route\") in:title assignee:potter-sun"
+    },
+    "Aevatar-Team-Activity-Contract": {
+      "label": {
+        "en": "Team Activity Contract",
+        "zh": "Team Activity 合约闭环"
+      },
+      "desc": {
+        "en": "Potter-owned Team/Activity backend loop: EventEnvelope topology read model and API (#737), Team-scoped event stream (#738), console integration with Team Entry Member HTTP API (#785), and operator-focused Team Overview simplification (#683).",
+        "zh": "Potter 负责的 Team/Activity 后端闭环：EventEnvelope topology read model 与 API (#737)、Team-scoped event stream (#738)、console 接入 Team Entry Member HTTP API (#785)，以及面向 SaaS operator 的 Team Overview 简化 (#683)。"
+      },
+      "closure": "obligation",
+      "formal": "none",
+      "product": "aevatar",
+      "milestone": "A0",
+      "owner": "potter-sun",
+      "issue_count": 4,
+      "focus": true,
+      "archived": false,
+      "promoted_at": {
+        "seed": "2026-05-25",
+        "obligation": "2026-05-25"
+      },
+      "deps": [
+        "Aevatar-Studio-Team-First",
+        "Aevatar-EventSourcing-Hardening",
+        "Aevatar-Console-Web-Member-Flows"
+      ],
+      "gh_query": "is:issue is:open repo:aevatarAI/aevatar assignee:potter-sun (EventEnvelope OR \"Team Activity\" OR \"Team Entry\" OR \"Team Overview\") in:title"
     },
     "Aevatar-Inbound-Team-Demo": {
       "label": {
